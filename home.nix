@@ -178,6 +178,7 @@
   programs.wezterm = {
     enable = true;
     extraConfig = ''
+      local act = wezterm.action
       local config = wezterm.config_builder()
 
       -- Font. MesloLGS NF is a Nerd Font, which powerlevel10k needs
@@ -197,17 +198,21 @@
 
       config.default_cursor_style = 'SteadyBlock'
 
-      -- Window
+      -- Window. TITLE keeps the macOS title bar and traffic lights;
+      -- RESIZE alone removes them.
       config.window_padding = { left = 6, right = 6, top = 6, bottom = 4 }
-      config.window_decorations = 'RESIZE'
+      config.window_decorations = 'TITLE | RESIZE'
       config.scrollback_lines = 50000
       config.audible_bell = 'Disabled'
       config.check_for_updates = false
 
-      -- Tabs, shown only when there is more than one.
+      -- Tab bar always visible, so tabs and panes are discoverable
+      -- rather than appearing only once a second tab exists.
       config.enable_tab_bar = true
-      config.hide_tab_bar_if_only_one_tab = true
+      config.hide_tab_bar_if_only_one_tab = false
       config.use_fancy_tab_bar = false
+      config.tab_bar_at_bottom = false
+      config.show_new_tab_button_in_tab_bar = true
 
       -- macOS fullscreen. Native mode gives the window its own macOS
       -- Space, which hides it from AeroSpace entirely. false keeps
@@ -218,6 +223,27 @@
       -- Right Option still types special characters.
       config.send_composed_key_when_left_alt_is_pressed = false
       config.send_composed_key_when_right_alt_is_pressed = true
+
+      -- Panes. WezTerm's stock split bindings are ctrl+alt+shift+quote
+      -- and ctrl+alt+shift+5, which nobody discovers. These follow the
+      -- iTerm convention instead.
+      --
+      -- cmd-h and cmd-l are deliberately unused: macOS owns those for
+      -- Space navigation and would intercept them first.
+      config.keys = {
+        { key = 'd', mods = 'CMD', action = act.SplitHorizontal { domain = 'CurrentPaneDomain' } },
+        { key = 'd', mods = 'CMD|SHIFT', action = act.SplitVertical { domain = 'CurrentPaneDomain' } },
+        { key = 'w', mods = 'CMD', action = act.CloseCurrentPane { confirm = false } },
+
+        { key = '[', mods = 'CMD', action = act.ActivatePaneDirection 'Prev' },
+        { key = ']', mods = 'CMD', action = act.ActivatePaneDirection 'Next' },
+        { key = 'LeftArrow', mods = 'CMD|ALT', action = act.ActivatePaneDirection 'Left' },
+        { key = 'RightArrow', mods = 'CMD|ALT', action = act.ActivatePaneDirection 'Right' },
+        { key = 'UpArrow', mods = 'CMD|ALT', action = act.ActivatePaneDirection 'Up' },
+        { key = 'DownArrow', mods = 'CMD|ALT', action = act.ActivatePaneDirection 'Down' },
+
+        { key = 'z', mods = 'CMD|SHIFT', action = act.TogglePaneZoomState },
+      }
 
       return config
     '';
