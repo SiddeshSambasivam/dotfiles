@@ -110,11 +110,6 @@
       ''
         [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-        # Homebrew's shellenv runs in ~/.zprofile and prepends
-        # /opt/homebrew/bin, which would otherwise shadow every tool
-        # installed above. Put the nix profile back in front.
-        export PATH="/etc/profiles/per-user/$USER/bin:$PATH"
-
         # ---- Version managers ----
         # Each of these owns a directory of installed toolchains and
         # live project state, so nix installs neither the manager nor
@@ -152,6 +147,19 @@
 
         # AI workflow helpers
         [ -f "$HOME/.config/ai-workflow/shell.zsh" ] && source "$HOME/.config/ai-workflow/shell.zsh"
+
+        # ---- PATH precedence ----
+        # This has to be the last line that touches PATH.
+        #
+        # Two things would otherwise shadow the tools installed above.
+        # Homebrew's shellenv prepends /opt/homebrew/bin from
+        # ~/.zprofile, and `pyenv init` prepends its shims directory,
+        # which includes shims for uv and uvx.
+        #
+        # Putting the nix profile in front last means nix wins for
+        # everything it provides. pyenv keeps python, python3 and pip,
+        # because nix installs none of those.
+        export PATH="/etc/profiles/per-user/$USER/bin:$PATH"
       ''
     ];
   };
