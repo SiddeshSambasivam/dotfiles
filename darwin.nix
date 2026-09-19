@@ -111,7 +111,7 @@ in
         # ctrl+alt+h/j/k/l free for the terminal multiplexer.
         ctrl-alt-b = "exec-and-forget open -a 'Brave Browser'";
         ctrl-alt-c = "exec-and-forget open -a Cursor";
-        ctrl-alt-t = "exec-and-forget open -a iTerm";
+        ctrl-alt-t = "exec-and-forget open -a Ghostty";
         ctrl-alt-s = "exec-and-forget open -a Slack";
       };
 

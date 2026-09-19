@@ -164,6 +164,44 @@
     ];
   };
 
+  ####################################################################
+  # Ghostty
+  #
+  # package = null because the cask owns /Applications/Ghostty.app.
+  # Ghostty updates itself, which the read-only nix store cannot
+  # support, so nix writes only ~/.config/ghostty/config.
+  ####################################################################
+  programs.ghostty = {
+    enable = true;
+    package = null;
+
+    settings = {
+      # p10k needs a Nerd Font for its glyphs.
+      font-family = "MesloLGS NF";
+      font-size = 13;
+
+      background = "101216";
+      foreground = "c1c2c3";
+      cursor-color = "c9d1d9";
+      cursor-style-blink = true;
+
+      # Bytes, not lines. The default is 10 MB.
+      scrollback-limit = 100000000;
+
+      # false sends the macOS special character on option, matching
+      # iTerm's "Option Key Sends: Normal". Setting this true would
+      # send Meta instead and change what reaches the shell.
+      macos-option-as-alt = false;
+
+      window-padding-x = 6;
+      window-padding-y = 6;
+
+      # Ghostty implements the Kitty graphics protocol by default and
+      # leaves ctrl+q unbound, so a terminal multiplexer using it as a
+      # prefix works without extra passthrough config.
+    };
+  };
+
   programs.direnv = {
     enable = true;
     nix-direnv.enable = true;
