@@ -60,8 +60,6 @@
     # uv is a single static binary, so nix can install it while uv
     # manages the Python interpreters.
     uv
-
-    neovim
   ];
 
   ####################################################################
@@ -132,6 +130,23 @@
   programs.wezterm.enable = true;
 
   xdg.configFile."wezterm/wezterm.lua".source = ./wezterm.lua;
+
+  ####################################################################
+  # Neovim
+  #
+  # Same arrangement as WezTerm: the module installs the package and
+  # writes no config, because `initLua` is empty. That leaves
+  # ./nvim/init.lua free to be linked verbatim.
+  #
+  # defaultEditor sets EDITOR, which was previously nano.
+  ####################################################################
+  programs.neovim = {
+    enable = true;
+    defaultEditor = true;
+    viAlias = true;
+  };
+
+  xdg.configFile."nvim/init.lua".source = ./nvim/init.lua;
 
   programs.direnv = {
     enable = true;
