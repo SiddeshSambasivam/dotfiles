@@ -7,39 +7,18 @@
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = inputs@{ self, nix-darwin, nixpkgs }:
-  let
-    configuration = { pkgs, ... }: {
-      # List packages installed in system profile. To search by name, run:
-      # $ nix-env -qaP | grep wget
-      environment.systemPackages =
-        [ pkgs.vim
-        ];
+  outputs = inputs@{ self, nix-darwin, nixpkgs }: {
 
-      # Necessary for using flakes on this system.
-      nix.settings.experimental-features = "nix-command flakes";
-
-      # Enable alternative shell support in nix-darwin.
-      # programs.fish.enable = true;
-
-      # Set Git commit hash for darwin-version.
-      system.configurationRevision = self.rev or self.dirtyRev or null;
-
-      # Used for backwards compatibility, please read the changelog before changing.
-      # $ darwin-rebuild changelog
-      system.stateVersion = 6;
-      nix.enable = false;
-
-      # The platform the configuration will be used on.
-      nixpkgs.hostPlatform = "aarch64-darwin";
-      system.primaryUser = "siddeshsambasivam";
-    };
-  in
-  {
-    # Build darwin flake using:
-    # $ darwin-rebuild build --flake .#simple
+    # Named after LocalHostName, which is what `darwin-rebuild --flake .`
+    # looks up when you don't spell out an attribute.
     darwinConfigurations."sids-macbook" = nix-darwin.lib.darwinSystem {
-      modules = [ configuration ];
+      modules = [
+        ./darwin.nix
+
+        # Needs `self`, so it stays here rather than in darwin.nix.
+        # Makes `darwin-version` report the commit this was built from.
+        { system.configurationRevision = self.rev or self.dirtyRev or null; }
+      ];
     };
   };
 }
