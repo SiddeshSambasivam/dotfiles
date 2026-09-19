@@ -9,8 +9,9 @@ in
   ####################################################################
   nixpkgs.hostPlatform = "aarch64-darwin";
 
-  # Required by every `system.defaults` option: they are written as this
-  # user via `launchctl asuser`, because preferences are per-user.
+  # Every `system.defaults` option requires this. Preferences are
+  # per-user, so nix-darwin writes them as this user via
+  # `launchctl asuser`.
   system.primaryUser = username;
 
   # Read `darwin-rebuild changelog` before changing.
@@ -22,41 +23,42 @@ in
   environment.systemPackages = [
     pkgs.vim
 
-    # Containers. Podman has no daemon; on macOS it drives a Linux VM.
+    # Containers. Podman has no daemon; on macOS it drives a Linux VM,
+    # created with `podman machine init`.
     pkgs.podman
     # The VM provider. nixpkgs' podman on darwin ships only the podman
     # binary, so `podman machine init` fails without this.
     pkgs.vfkit
-    # `podman compose` is a shim that delegates to an external compose
-    # implementation. The real Compose plugin is far more compatible
-    # with existing docker-compose.yml than podman-compose is.
+    # `podman compose` delegates to an external compose implementation
+    # and picks this one up from PATH. The Compose plugin is more
+    # compatible with an existing docker-compose.yml than
+    # podman-compose is.
     pkgs.docker-compose
   ];
 
   ####################################################################
   # AeroSpace: tiling window manager.
   #
-  # Replaces Rectangle (window snapping), AltTab (window switching)
-  # and skhd (app-launcher hotkeys). Navigation between workspaces is
-  # NOT AeroSpace's job here: macOS Spaces do that, via the symbolic
-  # hotkeys re-enabled further down.
+  # AeroSpace arranges windows inside whichever macOS Space is active.
+  # It does not handle navigation between Spaces; the symbolic hotkeys
+  # further down do that.
   ####################################################################
   services.aerospace = {
     enable = true;
     settings = {
       config-version = 2;
 
+      # Undo an accidental cmd-alt-h, which would otherwise leave an
+      # app hidden with no obvious way back.
       automatically-unhide-macos-hidden-apps = true;
 
-      # AeroSpace's own workspaces are deliberately NOT used. macOS
-      # Spaces handle switching (cmd-h / cmd-l, re-enabled in the
-      # symbolichotkeys block below) and AeroSpace only tiles windows
-      # within whichever Space is active.
+      # AeroSpace's own workspaces stay unused, so every window lives
+      # on workspace 1.
       #
-      # This matters: AeroSpace hides an inactive workspace by parking
-      # its windows off-screen. Keeping everything on workspace 1 means
-      # it never parks anything, so no window can go missing behind a
-      # workspace you did not know you were on.
+      # AeroSpace hides an inactive workspace by moving its windows
+      # off-screen. A window left on a second workspace therefore
+      # looks like a window that disappeared. With one workspace it
+      # never moves anything off-screen.
 
       gaps = {
         inner.horizontal = 6;
@@ -68,21 +70,23 @@ in
       };
 
       mode.main.binding = {
-        # ---- Rectangle-style window placement ----
-        # These are the chords Rectangle used with
-        # alternateDefaultShortcuts. AeroSpace tiles rather than snaps,
-        # so `move` reorders the window within the split: with two
-        # windows side by side, `move left` puts this one on the left
-        # half. With a single window there is nothing to swap with, so
-        # it is a no-op rather than a resize.
+        # Nothing is bound on cmd- here. macOS claims cmd-h and cmd-l
+        # for Space navigation and intercepts symbolic hotkeys before
+        # any application sees them, so a cmd- binding would be dead.
+
+        # ---- Window placement ----
+        # AeroSpace tiles rather than snaps, so `move` reorders a
+        # window within the split. With two windows side by side,
+        # `move left` puts this one on the left half. With a single
+        # window there is nothing to swap with and it does nothing.
         ctrl-alt-left = "move left";
         ctrl-alt-right = "move right";
         ctrl-alt-up = "move up";
         ctrl-alt-down = "move down";
-        ctrl-alt-shift-enter = "fullscreen";      # Rectangle's almost-maximize slot
+        ctrl-alt-shift-enter = "fullscreen";
 
-        # Split orientation. `tiles horizontal` gives left/right halves,
-        # `tiles vertical` gives top/bottom.
+        # Split orientation. `tiles horizontal` gives left and right
+        # halves, `tiles vertical` gives top and bottom.
         ctrl-alt-shift-left = "layout tiles horizontal";
         ctrl-alt-shift-up = "layout tiles vertical";
         ctrl-alt-shift-right = "layout accordion";
@@ -98,9 +102,9 @@ in
 
         alt-shift-semicolon = "mode service";
 
-        # ---- App launchers, formerly the four rules in ~/.skhdrc ----
-        # Arrow chords above do not collide with these, nor with
-        # herdr's ctrl+alt+h/j/k/l pane focus.
+        # ---- App launchers ----
+        # These use letters rather than arrows, which leaves
+        # ctrl+alt+h/j/k/l free for the terminal multiplexer.
         ctrl-alt-b = "exec-and-forget open -a 'Brave Browser'";
         ctrl-alt-c = "exec-and-forget open -a Cursor";
         ctrl-alt-t = "exec-and-forget open -a iTerm";
@@ -126,24 +130,25 @@ in
   ####################################################################
   # Homebrew: GUI applications.
   #
-  # The rule: if an app updates itself, it belongs here rather than in
-  # nixpkgs. The nix store is read-only, so a self-updating app either
-  # fails to update or gets reverted on the next darwin-rebuild.
+  # An app that updates itself belongs here rather than in nixpkgs.
+  # The nix store is read-only, so a self-updating app either fails to
+  # update or writes elsewhere and gets reverted on the next
+  # darwin-rebuild. Homebrew expects apps to update themselves.
   #
-  # This module does NOT install Homebrew, it only drives the one
-  # already at /opt/homebrew. See the bootstrap section in README.
+  # This module does not install Homebrew. It drives the one already
+  # at /opt/homebrew. See the bootstrap section in README.
   ####################################################################
   homebrew = {
     enable = true;
 
     onActivation = {
-      # "none" is additive: brew installs what's declared and ignores
-      # everything else.
+      # "none" is additive: brew installs what this file declares and
+      # ignores everything else.
       #
-      # Not "check": that runs `brew bundle cleanup`, which counts the
-      # 200+ undeclared formulae and aborts activation with exit 2.
-      # Move to "check", then "uninstall", once the prune is done and
-      # this file lists everything brew should own.
+      # "check" runs `brew bundle cleanup` and aborts activation with
+      # exit 2 when anything installed is missing from the list, so it
+      # only works once the list covers every formula and cask.
+      # "uninstall" and "zap" remove the undeclared ones instead.
       cleanup = "none";
       autoUpdate = false;
       upgrade = false;
@@ -152,32 +157,29 @@ in
     # ngrok's cask lives in its own tap rather than homebrew/cask.
     taps = [ "ngrok/ngrok" ];
 
+    # Mac App Store apps cannot be listed here. macOS owns them as
+    # root:wheel and protects them, so brew can neither adopt nor
+    # overwrite one. Declaring them needs homebrew.masApps and the
+    # `mas` CLI, or a reinstall from the cask.
     casks = [
       # Daily drivers
       "brave-browser"
       "obsidian"
       "bitwarden"
       "cursor"
-
-      # Migrated off the Mac App Store. An App Store install is owned
-      # by root:wheel and protected, so brew can neither adopt nor
-      # overwrite it; the copy had to be deleted first. Xcode, Keynote,
-      # Numbers, Pages and GarageBand are still App Store apps and
-      # cannot be declared here for the same reason.
       "slack"
 
-      # Terminal. iterm2 stays declared until ghostty has replaced it
-      # in practice; drop it then.
+      # Terminals
       "ghostty"
       "iterm2"
 
-      # Networking. tailscale-app is the menu-bar app with the system
-      # NetworkExtension; the `tailscale` formula is only the CLI and
-      # is not a substitute.
+      # tailscale-app is the menu-bar app with the system
+      # NetworkExtension. The `tailscale` formula is only the CLI and
+      # does not replace it.
       "tailscale-app"
 
       # Utilities
-      "calibre"        # kindle library management
+      "calibre"        # ebook library management
       "medis"          # redis GUI
       "localsend"
       "wispr-flow"
@@ -198,7 +200,7 @@ in
   # Every key below exists in
   #   $NIXDARWIN/modules/system/defaults/<domain>.nix
   # Typed means nix checks the value and sometimes translates it, so
-  # you write `NewWindowTarget = "Recents"` and nix writes "PfAF".
+  # writing `NewWindowTarget = "Recents"` makes nix write "PfAF".
   ####################################################################
   system.defaults = {
 
@@ -296,61 +298,60 @@ in
     };
 
     ####################################################################
-    # CustomUserPreferences: the escape hatch.
+    # CustomUserPreferences: untyped fallback.
     #
-    # Anything with no typed option goes here. There is no type
-    # checking, so the value type must match what macOS already
-    # stores. Check with:  defaults read-type <domain> <key>
+    # Anything with no typed option goes here. Nix does not check these
+    # values, so each one must match the type macOS already stores.
+    # Read the type with:  defaults read-type <domain> <key>
     #
     # Each top-level key becomes one `defaults write <domain> <key>`,
-    # which REPLACES that key's whole value. It does not merge.
+    # which replaces that key's whole value rather than merging into it.
     ####################################################################
     CustomUserPreferences = {
 
       #################################################################
       # Keyboard shortcuts.
       #
-      # This domain stores only your overrides, not all of Apple's
-      # defaults, so these 24 entries are the complete delta. Because
-      # the write replaces the entire dictionary, dropping an entry
-      # here silently restores that shortcut to stock.
+      # This domain holds only the overrides, not all of Apple's
+      # defaults, so the entries below are the complete delta. The
+      # write replaces the entire dictionary, so removing an entry
+      # here restores that shortcut to stock rather than leaving it
+      # alone.
       #
       # parameters = [ ascii keyCode modifierMask ]
       # modifierMask is a bitfield:
       #   shift 131072 | ctrl 262144 | alt 524288 | cmd 1048576
       #   so shift+cmd = 1179648, ctrl+alt = 786432
       #
-      # id -> name for THIS macOS version comes from:
+      # The id to name mapping for a given macOS version lives in:
       #   plutil -p /System/Library/ExtensionKit/Extensions/\
       #     KeyboardSettings.appex/Contents/Resources/en.lproj/\
       #     DefaultShortcutsTable.xml
       #################################################################
       "com.apple.symbolichotkeys".AppleSymbolicHotKeys = {
-        # macOS Spaces navigation, ON. Spaces do the switching;
-        # AeroSpace only tiles within the active Space and binds
-        # nothing on cmd-, so there is no clash.
+        # Space navigation.
         #
-        # Caveat that nix cannot fix: the Spaces themselves are created
-        # by hand in Mission Control. There is no API and no defaults
-        # key for them, so a new machine needs them added manually
-        # before these shortcuts have anywhere to go.
+        # Nix cannot create the Spaces themselves. They are added by
+        # hand in Mission Control, with no API and no defaults key, so
+        # a new machine needs them created before these shortcuts have
+        # anywhere to go.
         "79" = { enabled = true; value = { parameters = [ 104 4 1048576 ]; type = "standard"; }; };    # cmd+h        previous Space
         "80" = { enabled = true; value = { parameters = [ 104 4 1179648 ]; type = "standard"; }; };    # shift+cmd+h  drag window to previous Space
         "81" = { enabled = true; value = { parameters = [ 108 37 1048576 ]; type = "standard"; }; };   # cmd+l        next Space
         "82" = { enabled = true; value = { parameters = [ 108 37 1179648 ]; type = "standard"; }; };   # shift+cmd+l  drag window to next Space
 
-        # Kept. Nothing in AeroSpace binds cmd-j, so there is no clash.
-        # Mission Control is noisier under a tiling manager, because
-        # AeroSpace hides inactive workspaces by parking windows
-        # off-screen and Mission Control still shows them.
+        # Mission Control. It lists windows a tiling manager has parked
+        # off-screen alongside the visible ones, so it shows more than
+        # what is on screen.
         "32" = { enabled = true; value = { parameters = [ 106 38 1048576 ]; type = "standard"; }; };   # cmd+j        Mission Control
         "34" = { enabled = true; value = { parameters = [ 106 38 1179648 ]; type = "standard"; }; };   # shift+cmd+j  Mission Control, shift variant
         "98" = { enabled = true; value = { parameters = [ 47 44 1179648 ]; type = "standard"; }; };    # shift+cmd+/  Help menu
 
-        # Spotlight is the launcher again now that Raycast is retired.
-        "64" = { enabled = true; value = { parameters = [ 32 49 1048576 ]; type = "standard"; }; };    # cmd+Space    Spotlight
+        # Spotlight.
+        "64" = { enabled = true; value = { parameters = [ 32 49 1048576 ]; type = "standard"; }; };    # cmd+Space     Spotlight
         "65" = { enabled = true; value = { parameters = [ 32 49 1572864 ]; type = "standard"; }; };    # alt+cmd+Space Finder search
 
+        # Off, so the chords stay free.
         "60" = { enabled = false; value = { parameters = [ 32 49 262144 ]; type = "standard"; }; };    # previous input source
         "61" = { enabled = false; value = { parameters = [ 32 49 786432 ]; type = "standard"; }; };    # next input source
         "118" = { enabled = false; value = { parameters = [ 65535 18 262144 ]; type = "standard"; }; }; # switch to Space 1
@@ -371,8 +372,8 @@ in
         "26" = { enabled = false; };
       };
 
-      # Global-domain keys with no typed nix-darwin option.
-      # Note the domain is spelled "NSGlobalDomain" here, not "-g".
+      # Global-domain keys with no typed nix-darwin option. The domain
+      # is spelled "NSGlobalDomain" here, not "-g".
       NSGlobalDomain = {
         AppleMenuBarVisibleInFullscreen = false;
         AppleMiniaturizeOnDoubleClick = false;
@@ -384,21 +385,17 @@ in
       };
 
       "com.apple.screencapture".showsClicks = true;
-
-      # Rectangle and Raycast preference blocks were removed here when
-      # AeroSpace took over window management and Spotlight took back
-      # cmd+Space. AltTab and skhd went at the same time: AeroSpace
-      # covers window focus and the app-launcher bindings.
     };
   };
 
   ####################################################################
-  # nix-darwin writes the plists but never tells the window server to
-  # re-read them, so hotkey changes would wait for a logout. Activation
-  # runs as root, so drop back to the user the same way nix-darwin's own
-  # `defaults write` lines do.
+  # nix-darwin writes the preference plists but never tells the window
+  # server to re-read them, so hotkey changes wait for a logout without
+  # this. Activation runs as root, so it drops back to the user the
+  # same way nix-darwin's own `defaults write` lines do.
   #
-  # In 26.05 `postUserActivation` was removed; this must be postActivation.
+  # This has to be postActivation. nix-darwin 26.05 removed
+  # postUserActivation.
   ####################################################################
   system.activationScripts.postActivation.text = ''
     echo >&2 "reloading keyboard shortcuts..."

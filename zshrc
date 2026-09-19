@@ -127,7 +127,7 @@ eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
 
 
-# Containers. Podman replaced Docker Desktop; same --format fields.
+# Watch running containers.
 alias dl='watch -n 2 '\''podman ps --format "table {{.ID}}\t{{.Names}}\t{{.Status}}\t{{.State}}"'\'''
 
 # Point Docker-API clients (docker-compose, testcontainers, SDKs) at
@@ -165,5 +165,5 @@ export PATH="/Users/siddeshsambasivam/.antigravity-ide/antigravity-ide/bin:$PATH
 # OpenClaw Completion
 [ -f "/Users/siddeshsambasivam/.openclaw/completions/openclaw.zsh" ] && source "/Users/siddeshsambasivam/.openclaw/completions/openclaw.zsh"
 
-# AI workflow helpers (WezTerm, herdr, treehouse, OpenPlan)
+# AI workflow helpers
 [ -f "$HOME/.config/ai-workflow/shell.zsh" ] && source "$HOME/.config/ai-workflow/shell.zsh"
