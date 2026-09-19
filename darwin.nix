@@ -68,30 +68,39 @@ in
       };
 
       mode.main.binding = {
-        # Nothing on cmd- here. macOS owns cmd-h and cmd-l for Space
-        # navigation, and it intercepts symbolic hotkeys before any
-        # application sees them, so binding them here would be dead.
+        # ---- Rectangle-style window placement ----
+        # These are the chords Rectangle used with
+        # alternateDefaultShortcuts. AeroSpace tiles rather than snaps,
+        # so `move` reorders the window within the split: with two
+        # windows side by side, `move left` puts this one on the left
+        # half. With a single window there is nothing to swap with, so
+        # it is a no-op rather than a resize.
+        ctrl-alt-left = "move left";
+        ctrl-alt-right = "move right";
+        ctrl-alt-up = "move up";
+        ctrl-alt-down = "move down";
+        ctrl-alt-shift-enter = "fullscreen";      # Rectangle's almost-maximize slot
 
-        # ---- Focus and rearrange within the active Space ----
+        # Split orientation. `tiles horizontal` gives left/right halves,
+        # `tiles vertical` gives top/bottom.
+        ctrl-alt-shift-left = "layout tiles horizontal";
+        ctrl-alt-shift-up = "layout tiles vertical";
+        ctrl-alt-shift-right = "layout accordion";
+
+        # ---- Focus, and resize the split ----
         alt-h = "focus left";
         alt-j = "focus down";
         alt-k = "focus up";
         alt-l = "focus right";
-        alt-shift-h = "move left";
-        alt-shift-j = "move down";
-        alt-shift-k = "move up";
-        alt-shift-l = "move right";
-
-        # ---- Layout ----
-        alt-slash = "layout tiles horizontal vertical";
-        alt-comma = "layout accordion horizontal vertical";
-        alt-f = "fullscreen";
         alt-minus = "resize smart -50";
         alt-equal = "resize smart +50";
+        alt-f = "fullscreen";
 
         alt-shift-semicolon = "mode service";
 
         # ---- App launchers, formerly the four rules in ~/.skhdrc ----
+        # Arrow chords above do not collide with these, nor with
+        # herdr's ctrl+alt+h/j/k/l pane focus.
         ctrl-alt-b = "exec-and-forget open -a 'Brave Browser'";
         ctrl-alt-c = "exec-and-forget open -a Cursor";
         ctrl-alt-t = "exec-and-forget open -a iTerm";
