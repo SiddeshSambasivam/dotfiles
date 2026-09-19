@@ -171,90 +171,53 @@
   # and WezTerm has no built-in updater to fight, so the store copy
   # is both newer and safe to manage declaratively.
   #
-  # The Lua below is the config as written, not a translation. herdr
-  # owns workspaces, tabs, panes and scrollback; WezTerm is the
-  # renderer and keeps only Cmd chords so the ctrl+alt cluster and the
-  # ctrl+q prefix reach herdr untouched.
+  # Autocomplete and syntax highlighting are not configured here.
+  # A terminal emulator draws glyphs; those are shell features and
+  # live in programs.zsh above.
   ####################################################################
   programs.wezterm = {
     enable = true;
     extraConfig = ''
-      -- WezTerm: thin, fast renderer. herdr owns workspaces, tabs, panes, scrollback.
-      -- Reload: Cmd+Shift+R. Validate from a shell: wezterm show-keys
-      local wezterm = require 'wezterm'
-      local act = wezterm.action
       local config = wezterm.config_builder()
 
-      local home = os.getenv 'HOME'
-
-      -- Launch straight into the persistent herdr session. Cmd+Shift+N gives a plain
-      -- zsh window if herdr is ever broken.
-      config.default_prog = { home .. '/.local/bin/herdr' }
-      config.set_environment_variables = { TERM_PROGRAM_HOST = 'wezterm' }
-
-      -- Window: no WezTerm tab bar (herdr draws its own), thin padding, native fullscreen.
-      config.enable_tab_bar = false
-      config.window_decorations = 'RESIZE'
-      config.window_padding = { left = 6, right = 6, top = 6, bottom = 4 }
-      config.native_macos_fullscreen_mode = true
-      config.window_close_confirmation = 'NeverPrompt' -- closing a window only detaches herdr
-      config.initial_cols = 220
-      config.initial_rows = 60
-
-      -- Speed and quiet.
-      config.front_end = 'WebGpu'
-      config.max_fps = 120
-      config.animation_fps = 1
-      config.cursor_blink_rate = 0
-      config.audible_bell = 'Disabled'
-      config.check_for_updates = false
-      config.scrollback_lines = 2000 -- herdr keeps the real per-pane scrollback
-
-      -- Look: matches herdr's catppuccin theme. MesloLGS NF is what iTerm/p10k already use.
-      config.color_scheme = 'Catppuccin Mocha'
+      -- Font. MesloLGS NF is a Nerd Font, which powerlevel10k needs
+      -- for its glyphs. The fallbacks cover anything it lacks.
       config.font = wezterm.font_with_fallback { 'MesloLGS NF', 'JetBrains Mono', 'Menlo' }
       config.font_size = 13.0
       config.line_height = 1.05
 
-      -- Terminal features herdr and agents rely on.
-      config.enable_kitty_graphics = true -- herdr pane images
-      config.send_composed_key_when_left_alt_is_pressed = false -- left Option = Alt/Meta (Option+Enter newline in Claude Code)
-      config.send_composed_key_when_right_alt_is_pressed = true -- right Option still types special characters
-      config.bypass_mouse_reporting_modifiers = 'SHIFT' -- Shift+drag = WezTerm-level selection (herdr owns the mouse otherwise)
-
-      -- Keys: herdr uses ctrl+alt chords and the ctrl+q prefix; WezTerm keeps only Cmd chords.
-      config.disable_default_key_bindings = true
-      config.keys = {
-        -- clipboard
-        { key = 'c', mods = 'CMD', action = act.CopyTo 'Clipboard' },
-        { key = 'v', mods = 'CMD', action = act.PasteFrom 'Clipboard' },
-        -- windows (each window is another client on the same herdr session)
-        { key = 'n', mods = 'CMD', action = act.SpawnWindow },
-        { key = 'n', mods = 'CMD|SHIFT', action = act.SpawnCommandInNewWindow { args = { '/bin/zsh', '-l' } } },
-        { key = 'w', mods = 'CMD', action = act.CloseCurrentTab { confirm = false } },
-        { key = 'q', mods = 'CMD', action = act.QuitApplication },
-        { key = 'h', mods = 'CMD', action = act.HideApplication },
-        { key = 'm', mods = 'CMD', action = act.Hide },
-        { key = 'f', mods = 'CMD|CTRL', action = act.ToggleFullScreen },
-        -- text size
-        { key = '=', mods = 'CMD', action = act.IncreaseFontSize },
-        { key = '-', mods = 'CMD', action = act.DecreaseFontSize },
-        { key = '0', mods = 'CMD', action = act.ResetFontSize },
-        -- WezTerm utilities
-        { key = 'p', mods = 'CMD|SHIFT', action = act.ActivateCommandPalette },
-        { key = 'r', mods = 'CMD|SHIFT', action = act.ReloadConfiguration },
-        { key = 'l', mods = 'CMD|SHIFT', action = act.ShowDebugOverlay },
-        -- OpenPlan: open the plan hub from anywhere in the terminal
-        {
-          key = 'o',
-          mods = 'CMD|SHIFT',
-          action = wezterm.action_callback(function()
-            wezterm.run_child_process { '/usr/bin/open', '-a', 'OpenPlan' }
-          end),
-        },
-        -- Claude Code multiline input: Shift+Enter as CSI-u (same sequence /terminal-setup installs for iTerm2)
-        { key = 'Enter', mods = 'SHIFT', action = act.SendString '\x1b[13;2u' },
+      -- Colours, carried over from the iTerm profile.
+      config.colors = {
+        background = '#101216',
+        foreground = '#c1c2c3',
+        cursor_bg = '#c9d1d9',
+        cursor_border = '#c9d1d9',
+        cursor_fg = '#101216',
       }
+
+      config.default_cursor_style = 'SteadyBlock'
+
+      -- Window
+      config.window_padding = { left = 6, right = 6, top = 6, bottom = 4 }
+      config.window_decorations = 'RESIZE'
+      config.scrollback_lines = 50000
+      config.audible_bell = 'Disabled'
+      config.check_for_updates = false
+
+      -- Tabs, shown only when there is more than one.
+      config.enable_tab_bar = true
+      config.hide_tab_bar_if_only_one_tab = true
+      config.use_fancy_tab_bar = false
+
+      -- macOS fullscreen. Native mode gives the window its own macOS
+      -- Space, which hides it from AeroSpace entirely. false keeps
+      -- fullscreen as an ordinary window that AeroSpace can still tile.
+      config.native_macos_fullscreen_mode = false
+
+      -- Left Option sends Alt/Meta so readline word-motions work.
+      -- Right Option still types special characters.
+      config.send_composed_key_when_left_alt_is_pressed = false
+      config.send_composed_key_when_right_alt_is_pressed = true
 
       return config
     '';
