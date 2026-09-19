@@ -17,6 +17,10 @@ in
   # Read `darwin-rebuild changelog` before changing.
   system.stateVersion = 6;
 
+  # home-manager reads home.homeDirectory from here. Without it the
+  # value is null and evaluation fails on a type error.
+  users.users.${username}.home = "/Users/${username}";
+
   # Determinate Nix owns the daemon and nix.conf.
   nix.enable = false;
 
