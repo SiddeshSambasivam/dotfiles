@@ -26,7 +26,7 @@ in
 
   environment.systemPackages = [
     pkgs.vim
-
+    pkgs.neovim
     # Containers. Podman has no daemon; on macOS it drives a Linux VM,
     # created with `podman machine init`.
     pkgs.podman
@@ -111,7 +111,7 @@ in
         # ctrl+alt+h/j/k/l free for the terminal multiplexer.
         ctrl-alt-b = "exec-and-forget open -a 'Brave Browser'";
         ctrl-alt-c = "exec-and-forget open -a Cursor";
-        ctrl-alt-t = "exec-and-forget open -a Ghostty";
+        ctrl-alt-t = "exec-and-forget open -a WezTerm";
         ctrl-alt-s = "exec-and-forget open -a Slack";
       };
 
@@ -173,8 +173,9 @@ in
       "cursor"
       "slack"
 
-      # Terminals
-      "ghostty"
+      # Terminals. WezTerm comes from nixpkgs (see home.nix), not a
+      # cask: the cask is two years stale and WezTerm has no built-in
+      # updater that the read-only nix store would conflict with.
       "iterm2"
 
       # tailscale-app is the menu-bar app with the system

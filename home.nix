@@ -165,41 +165,99 @@
   };
 
   ####################################################################
-  # Ghostty
+  # WezTerm
   #
-  # package = null because the cask owns /Applications/Ghostty.app.
-  # Ghostty updates itself, which the read-only nix store cannot
-  # support, so nix writes only ~/.config/ghostty/config.
+  # From nixpkgs rather than a cask: the cask is pinned at 20240203
+  # and WezTerm has no built-in updater to fight, so the store copy
+  # is both newer and safe to manage declaratively.
+  #
+  # The Lua below is the config as written, not a translation. herdr
+  # owns workspaces, tabs, panes and scrollback; WezTerm is the
+  # renderer and keeps only Cmd chords so the ctrl+alt cluster and the
+  # ctrl+q prefix reach herdr untouched.
   ####################################################################
-  programs.ghostty = {
+  programs.wezterm = {
     enable = true;
-    package = null;
+    extraConfig = ''
+      -- WezTerm: thin, fast renderer. herdr owns workspaces, tabs, panes, scrollback.
+      -- Reload: Cmd+Shift+R. Validate from a shell: wezterm show-keys
+      local wezterm = require 'wezterm'
+      local act = wezterm.action
+      local config = wezterm.config_builder()
 
-    settings = {
-      # p10k needs a Nerd Font for its glyphs.
-      font-family = "MesloLGS NF";
-      font-size = 13;
+      local home = os.getenv 'HOME'
 
-      background = "101216";
-      foreground = "c1c2c3";
-      cursor-color = "c9d1d9";
-      cursor-style-blink = true;
+      -- Launch straight into the persistent herdr session. Cmd+Shift+N gives a plain
+      -- zsh window if herdr is ever broken.
+      config.default_prog = { home .. '/.local/bin/herdr' }
+      config.set_environment_variables = { TERM_PROGRAM_HOST = 'wezterm' }
 
-      # Bytes, not lines. The default is 10 MB.
-      scrollback-limit = 100000000;
+      -- Window: no WezTerm tab bar (herdr draws its own), thin padding, native fullscreen.
+      config.enable_tab_bar = false
+      config.window_decorations = 'RESIZE'
+      config.window_padding = { left = 6, right = 6, top = 6, bottom = 4 }
+      config.native_macos_fullscreen_mode = true
+      config.window_close_confirmation = 'NeverPrompt' -- closing a window only detaches herdr
+      config.initial_cols = 220
+      config.initial_rows = 60
 
-      # false sends the macOS special character on option, matching
-      # iTerm's "Option Key Sends: Normal". Setting this true would
-      # send Meta instead and change what reaches the shell.
-      macos-option-as-alt = false;
+      -- Speed and quiet.
+      config.front_end = 'WebGpu'
+      config.max_fps = 120
+      config.animation_fps = 1
+      config.cursor_blink_rate = 0
+      config.audible_bell = 'Disabled'
+      config.check_for_updates = false
+      config.scrollback_lines = 2000 -- herdr keeps the real per-pane scrollback
 
-      window-padding-x = 6;
-      window-padding-y = 6;
+      -- Look: matches herdr's catppuccin theme. MesloLGS NF is what iTerm/p10k already use.
+      config.color_scheme = 'Catppuccin Mocha'
+      config.font = wezterm.font_with_fallback { 'MesloLGS NF', 'JetBrains Mono', 'Menlo' }
+      config.font_size = 13.0
+      config.line_height = 1.05
 
-      # Ghostty implements the Kitty graphics protocol by default and
-      # leaves ctrl+q unbound, so a terminal multiplexer using it as a
-      # prefix works without extra passthrough config.
-    };
+      -- Terminal features herdr and agents rely on.
+      config.enable_kitty_graphics = true -- herdr pane images
+      config.send_composed_key_when_left_alt_is_pressed = false -- left Option = Alt/Meta (Option+Enter newline in Claude Code)
+      config.send_composed_key_when_right_alt_is_pressed = true -- right Option still types special characters
+      config.bypass_mouse_reporting_modifiers = 'SHIFT' -- Shift+drag = WezTerm-level selection (herdr owns the mouse otherwise)
+
+      -- Keys: herdr uses ctrl+alt chords and the ctrl+q prefix; WezTerm keeps only Cmd chords.
+      config.disable_default_key_bindings = true
+      config.keys = {
+        -- clipboard
+        { key = 'c', mods = 'CMD', action = act.CopyTo 'Clipboard' },
+        { key = 'v', mods = 'CMD', action = act.PasteFrom 'Clipboard' },
+        -- windows (each window is another client on the same herdr session)
+        { key = 'n', mods = 'CMD', action = act.SpawnWindow },
+        { key = 'n', mods = 'CMD|SHIFT', action = act.SpawnCommandInNewWindow { args = { '/bin/zsh', '-l' } } },
+        { key = 'w', mods = 'CMD', action = act.CloseCurrentTab { confirm = false } },
+        { key = 'q', mods = 'CMD', action = act.QuitApplication },
+        { key = 'h', mods = 'CMD', action = act.HideApplication },
+        { key = 'm', mods = 'CMD', action = act.Hide },
+        { key = 'f', mods = 'CMD|CTRL', action = act.ToggleFullScreen },
+        -- text size
+        { key = '=', mods = 'CMD', action = act.IncreaseFontSize },
+        { key = '-', mods = 'CMD', action = act.DecreaseFontSize },
+        { key = '0', mods = 'CMD', action = act.ResetFontSize },
+        -- WezTerm utilities
+        { key = 'p', mods = 'CMD|SHIFT', action = act.ActivateCommandPalette },
+        { key = 'r', mods = 'CMD|SHIFT', action = act.ReloadConfiguration },
+        { key = 'l', mods = 'CMD|SHIFT', action = act.ShowDebugOverlay },
+        -- OpenPlan: open the plan hub from anywhere in the terminal
+        {
+          key = 'o',
+          mods = 'CMD|SHIFT',
+          action = wezterm.action_callback(function()
+            wezterm.run_child_process { '/usr/bin/open', '-a', 'OpenPlan' }
+          end),
+        },
+        -- Claude Code multiline input: Shift+Enter as CSI-u (same sequence /terminal-setup installs for iTerm2)
+        { key = 'Enter', mods = 'SHIFT', action = act.SendString '\x1b[13;2u' },
+      }
+
+      return config
+    '';
   };
 
   programs.direnv = {
