@@ -21,6 +21,65 @@ in
 
   environment.systemPackages = [ pkgs.vim ];
 
+  ####################################################################
+  # Homebrew: GUI applications.
+  #
+  # The rule: if an app updates itself, it belongs here rather than in
+  # nixpkgs. The nix store is read-only, so a self-updating app either
+  # fails to update or gets reverted on the next darwin-rebuild.
+  #
+  # This module does NOT install Homebrew, it only drives the one
+  # already at /opt/homebrew. See the bootstrap section in README.
+  ####################################################################
+  homebrew = {
+    enable = true;
+
+    onActivation = {
+      # "none" is additive: brew installs what's declared and ignores
+      # everything else.
+      #
+      # Not "check": that runs `brew bundle cleanup`, which counts the
+      # 200+ undeclared formulae and aborts activation with exit 2.
+      # Move to "check", then "uninstall", once the prune is done and
+      # this file lists everything brew should own.
+      cleanup = "none";
+      autoUpdate = false;
+      upgrade = false;
+    };
+
+    casks = [
+      # Daily drivers
+      "brave-browser"
+      "obsidian"
+      "bitwarden"
+      "cursor"
+
+      # NOT here: slack. It is a Mac App Store install, owned by
+      # root:wheel, so `brew install --cask slack` can never succeed
+      # and would fail activation. Either declare it via
+      # homebrew.masApps (needs the `mas` brew), or delete the App
+      # Store copy and add "slack" to this list. Same applies to
+      # Xcode, Keynote, Numbers, Pages and GarageBand.
+
+      # Terminal. iterm2 stays declared until ghostty has replaced it
+      # in practice; drop it then.
+      "ghostty"
+      "iterm2"
+
+      # Networking. tailscale-app is the menu-bar app with the system
+      # NetworkExtension; the `tailscale` formula is only the CLI and
+      # is not a substitute.
+      "tailscale-app"
+
+      # Utilities
+      "calibre"        # kindle library management
+      "medis"          # redis GUI
+      "localsend"
+      "wispr-flow"
+      "opensuperwhisper"
+    ];
+  };
+
   networking.computerName = "sid's macbook";
   networking.hostName = "sids-macbook";
   networking.localHostName = "sids-macbook";
