@@ -266,6 +266,22 @@
 
         { key = 'z', mods = 'CMD|SHIFT', action = act.TogglePaneZoomState },
 
+        -- Rename the active tab. WezTerm ships no binding for this.
+        -- Submitting an empty line clears the override and hands the
+        -- title back to automatic naming.
+        {
+          key = 'e',
+          mods = 'CMD|SHIFT',
+          action = act.PromptInputLine {
+            description = 'New tab title',
+            action = wezterm.action_callback(function(window, _, line)
+              if line ~= nil then
+                window:active_tab():set_title(line)
+              end
+            end),
+          },
+        },
+
         -- Fullscreen on the standard macOS chord. WezTerm's default
         -- is alt+Enter, which is also how some TUIs take a newline,
         -- so that one is handed back to the running program.
