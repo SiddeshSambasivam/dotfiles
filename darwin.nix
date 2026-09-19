@@ -19,7 +19,19 @@ in
   # Determinate Nix owns the daemon and nix.conf.
   nix.enable = false;
 
-  environment.systemPackages = [ pkgs.vim ];
+  environment.systemPackages = [
+    pkgs.vim
+
+    # Containers. Podman has no daemon; on macOS it drives a Linux VM.
+    pkgs.podman
+    # The VM provider. nixpkgs' podman on darwin ships only the podman
+    # binary, so `podman machine init` fails without this.
+    pkgs.vfkit
+    # `podman compose` is a shim that delegates to an external compose
+    # implementation. The real Compose plugin is far more compatible
+    # with existing docker-compose.yml than podman-compose is.
+    pkgs.docker-compose
+  ];
 
   ####################################################################
   # Homebrew: GUI applications.
@@ -47,6 +59,9 @@ in
       upgrade = false;
     };
 
+    # ngrok's cask lives in its own tap rather than homebrew/cask.
+    taps = [ "ngrok/ngrok" ];
+
     casks = [
       # Daily drivers
       "brave-browser"
@@ -54,12 +69,12 @@ in
       "bitwarden"
       "cursor"
 
-      # NOT here: slack. It is a Mac App Store install, owned by
-      # root:wheel, so `brew install --cask slack` can never succeed
-      # and would fail activation. Either declare it via
-      # homebrew.masApps (needs the `mas` brew), or delete the App
-      # Store copy and add "slack" to this list. Same applies to
-      # Xcode, Keynote, Numbers, Pages and GarageBand.
+      # Migrated off the Mac App Store. An App Store install is owned
+      # by root:wheel and protected, so brew can neither adopt nor
+      # overwrite it; the copy had to be deleted first. Xcode, Keynote,
+      # Numbers, Pages and GarageBand are still App Store apps and
+      # cannot be declared here for the same reason.
+      "slack"
 
       # Terminal. iterm2 stays declared until ghostty has replaced it
       # in practice; drop it then.
@@ -77,6 +92,9 @@ in
       "localsend"
       "wispr-flow"
       "opensuperwhisper"
+
+      # Dev
+      "ngrok"
     ];
   };
 
