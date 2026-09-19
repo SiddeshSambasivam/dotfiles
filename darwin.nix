@@ -26,7 +26,6 @@ in
 
   environment.systemPackages = [
     pkgs.vim
-    pkgs.neovim
     # Containers. Podman has no daemon; on macOS it drives a Linux VM,
     # created with `podman machine init`.
     pkgs.podman

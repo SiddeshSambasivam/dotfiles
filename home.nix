@@ -210,9 +210,28 @@
       -- rather than appearing only once a second tab exists.
       config.enable_tab_bar = true
       config.hide_tab_bar_if_only_one_tab = false
-      config.use_fancy_tab_bar = false
       config.tab_bar_at_bottom = false
       config.show_new_tab_button_in_tab_bar = true
+
+      -- The native-looking tab bar. false gives the retro one drawn
+      -- in terminal cells, which looks out of place under a real
+      -- macOS title bar.
+      config.use_fancy_tab_bar = true
+      config.tab_max_width = 32
+      config.window_frame = {
+        font = wezterm.font { family = 'MesloLGS NF', weight = 'Regular' },
+        font_size = 12.0,
+        active_titlebar_bg = '#101216',
+        inactive_titlebar_bg = '#101216',
+      }
+      config.colors.tab_bar = {
+        background = '#101216',
+        active_tab = { bg_color = '#1c1f26', fg_color = '#c9d1d9' },
+        inactive_tab = { bg_color = '#101216', fg_color = '#6b7280' },
+        inactive_tab_hover = { bg_color = '#1c1f26', fg_color = '#c1c2c3' },
+        new_tab = { bg_color = '#101216', fg_color = '#6b7280' },
+        new_tab_hover = { bg_color = '#1c1f26', fg_color = '#c1c2c3' },
+      }
 
       -- macOS fullscreen. Native mode gives the window its own macOS
       -- Space, which hides it from AeroSpace entirely. false keeps
@@ -243,6 +262,12 @@
         { key = 'DownArrow', mods = 'CMD|ALT', action = act.ActivatePaneDirection 'Down' },
 
         { key = 'z', mods = 'CMD|SHIFT', action = act.TogglePaneZoomState },
+
+        -- Fullscreen on the macOS chord. WezTerm's default is
+        -- alt+Enter, which is also how some TUIs take a newline, so
+        -- that one is handed back to the running program.
+        { key = 'f', mods = 'CMD|CTRL', action = act.ToggleFullScreen },
+        { key = 'Enter', mods = 'ALT', action = act.DisableDefaultAssignment },
       }
 
       return config
