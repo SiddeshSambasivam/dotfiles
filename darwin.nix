@@ -34,6 +34,94 @@ in
   ];
 
   ####################################################################
+  # AeroSpace: tiling window manager.
+  #
+  # Replaces Rectangle (window snapping), AltTab (window switching),
+  # skhd (app-launcher hotkeys) and the macOS Spaces shortcuts. Its
+  # workspaces are its own, not macOS Spaces, which is why the Spaces
+  # symbolic hotkeys are disabled below.
+  ####################################################################
+  services.aerospace = {
+    enable = true;
+    settings = {
+      config-version = 2;
+
+      # cmd-h is rebound below, so make sure a stray cmd-alt-h cannot
+      # leave an app hidden with no obvious way back.
+      automatically-unhide-macos-hidden-apps = true;
+
+      gaps = {
+        inner.horizontal = 6;
+        inner.vertical = 6;
+        outer.top = 6;
+        outer.bottom = 6;
+        outer.left = 6;
+        outer.right = 6;
+      };
+
+      mode.main.binding = {
+        # ---- Workspaces. Same keys you used for macOS Spaces. ----
+        cmd-h = "workspace --wrap-around prev";
+        cmd-l = "workspace --wrap-around next";
+        cmd-shift-h = "move-node-to-workspace --wrap-around --focus-follows-window prev";
+        cmd-shift-l = "move-node-to-workspace --wrap-around --focus-follows-window next";
+
+        # ---- Focus and rearrange within a workspace ----
+        alt-h = "focus left";
+        alt-j = "focus down";
+        alt-k = "focus up";
+        alt-l = "focus right";
+        alt-shift-h = "move left";
+        alt-shift-j = "move down";
+        alt-shift-k = "move up";
+        alt-shift-l = "move right";
+
+        # ---- Layout ----
+        alt-slash = "layout tiles horizontal vertical";
+        alt-comma = "layout accordion horizontal vertical";
+        alt-f = "fullscreen";
+        alt-minus = "resize smart -50";
+        alt-equal = "resize smart +50";
+
+        # ---- Numbered workspaces ----
+        alt-1 = "workspace 1";
+        alt-2 = "workspace 2";
+        alt-3 = "workspace 3";
+        alt-4 = "workspace 4";
+        alt-5 = "workspace 5";
+        alt-shift-1 = "move-node-to-workspace 1";
+        alt-shift-2 = "move-node-to-workspace 2";
+        alt-shift-3 = "move-node-to-workspace 3";
+        alt-shift-4 = "move-node-to-workspace 4";
+        alt-shift-5 = "move-node-to-workspace 5";
+
+        alt-tab = "workspace-back-and-forth";
+        alt-shift-semicolon = "mode service";
+
+        # ---- App launchers, formerly the four rules in ~/.skhdrc ----
+        ctrl-alt-b = "exec-and-forget open -a 'Brave Browser'";
+        ctrl-alt-c = "exec-and-forget open -a Cursor";
+        ctrl-alt-t = "exec-and-forget open -a iTerm";
+        ctrl-alt-s = "exec-and-forget open -a Slack";
+      };
+
+      mode.service.binding = {
+        esc = [ "reload-config" "mode main" ];
+        r = [ "flatten-workspace-tree" "mode main" ];
+        f = [ "layout floating tiling" "mode main" ];
+        backspace = [ "close-all-windows-but-current" "mode main" ];
+      };
+
+      # Apps that misbehave when tiled.
+      on-window-detected = [
+        { "if".app-id = "com.apple.systempreferences"; run = "layout floating"; }
+        { "if".app-id = "com.apple.finder"; run = "layout floating"; }
+        { "if".app-id = "com.bitwarden.desktop"; run = "layout floating"; }
+      ];
+    };
+  };
+
+  ####################################################################
   # Homebrew: GUI applications.
   #
   # The rule: if an app updates itself, it belongs here rather than in
@@ -236,19 +324,27 @@ in
       #     DefaultShortcutsTable.xml
       #################################################################
       "com.apple.symbolichotkeys".AppleSymbolicHotKeys = {
-        # Vim-style Spaces navigation. Overrides cmd+h "Hide", which is
-        # the trade you already made.
-        "79" = { enabled = true; value = { parameters = [ 104 4 1048576 ]; type = "standard"; }; };    # cmd+h        previous Space
-        "80" = { enabled = true; value = { parameters = [ 104 4 1179648 ]; type = "standard"; }; };    # shift+cmd+h  drag window to previous Space
-        "81" = { enabled = true; value = { parameters = [ 108 37 1048576 ]; type = "standard"; }; };   # cmd+l        next Space
-        "82" = { enabled = true; value = { parameters = [ 108 37 1179648 ]; type = "standard"; }; };   # shift+cmd+l  drag window to next Space
+        # macOS Spaces navigation, OFF. AeroSpace binds cmd-h and cmd-l
+        # to its own workspaces, and macOS intercepts symbolic hotkeys
+        # before any application sees them, so leaving these enabled
+        # would shadow AeroSpace's identical bindings entirely.
+        "79" = { enabled = false; value = { parameters = [ 104 4 1048576 ]; type = "standard"; }; };   # cmd+h
+        "80" = { enabled = false; value = { parameters = [ 104 4 1179648 ]; type = "standard"; }; };   # shift+cmd+h
+        "81" = { enabled = false; value = { parameters = [ 108 37 1048576 ]; type = "standard"; }; };  # cmd+l
+        "82" = { enabled = false; value = { parameters = [ 108 37 1179648 ]; type = "standard"; }; };  # shift+cmd+l
 
+        # Kept. Nothing in AeroSpace binds cmd-j, so there is no clash.
+        # Mission Control is noisier under a tiling manager, because
+        # AeroSpace hides inactive workspaces by parking windows
+        # off-screen and Mission Control still shows them.
         "32" = { enabled = true; value = { parameters = [ 106 38 1048576 ]; type = "standard"; }; };   # cmd+j        Mission Control
         "34" = { enabled = true; value = { parameters = [ 106 38 1179648 ]; type = "standard"; }; };   # shift+cmd+j  Mission Control, shift variant
         "98" = { enabled = true; value = { parameters = [ 47 44 1179648 ]; type = "standard"; }; };    # shift+cmd+/  Help menu
 
-        # Off so the chords are free. 64 is cmd+Space, which Raycast holds.
-        "64" = { enabled = false; value = { parameters = [ 32 49 1048576 ]; type = "standard"; }; };   # Spotlight search
+        # Spotlight is the launcher again now that Raycast is retired.
+        "64" = { enabled = true; value = { parameters = [ 32 49 1048576 ]; type = "standard"; }; };    # cmd+Space    Spotlight
+        "65" = { enabled = true; value = { parameters = [ 32 49 1572864 ]; type = "standard"; }; };    # alt+cmd+Space Finder search
+
         "60" = { enabled = false; value = { parameters = [ 32 49 262144 ]; type = "standard"; }; };    # previous input source
         "61" = { enabled = false; value = { parameters = [ 32 49 786432 ]; type = "standard"; }; };    # next input source
         "118" = { enabled = false; value = { parameters = [ 65535 18 262144 ]; type = "standard"; }; }; # switch to Space 1
@@ -283,31 +379,10 @@ in
 
       "com.apple.screencapture".showsClicks = true;
 
-      #################################################################
-      # Third-party app shortcuts.
-      # These blocks go away when AeroSpace replaces Rectangle and
-      # Spotlight replaces Raycast.
-      #################################################################
-      "com.knollsoft.Rectangle" = {
-        launchOnLogin = true;
-        allowAnyShortcut = true;
-        alternateDefaultShortcuts = true;
-        moveCursorAcrossDisplays = 1;                # integer, not bool
-        subsequentExecutionMode = 1;
-        gapSize = 5.0;                               # float, not int
-        hapticFeedbackOnSnap = 2;
-        footprintAnimationDurationMultiplier = 0.0;  # float
-        hideMenubarIcon = false;
-        SUEnableAutomaticChecks = false;
-        almostMaximize = { keyCode = 36; modifierFlags = 917504; };  # ctrl+alt+shift+Return
-        toggleTodo = { keyCode = 11; modifierFlags = 786432; };      # ctrl+alt+b
-        reflowTodo = { keyCode = 45; modifierFlags = 786432; };      # ctrl+alt+n
-      };
-
-      "com.raycast.macos" = {
-        raycastGlobalHotkey = "Command-49";          # cmd+Space, freed by disabling hotkey 64
-        raycastShouldFollowSystemAppearance = true;
-      };
+      # Rectangle and Raycast preference blocks were removed here when
+      # AeroSpace took over window management and Spotlight took back
+      # cmd+Space. AltTab and skhd went at the same time: AeroSpace
+      # covers window focus and the app-launcher bindings.
     };
   };
 
