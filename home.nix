@@ -233,10 +233,13 @@
         new_tab_hover = { bg_color = '#1c1f26', fg_color = '#c1c2c3' },
       }
 
-      -- macOS fullscreen. Native mode gives the window its own macOS
-      -- Space, which hides it from AeroSpace entirely. false keeps
-      -- fullscreen as an ordinary window that AeroSpace can still tile.
-      config.native_macos_fullscreen_mode = false
+      -- Native macOS fullscreen, on the standard cmd-ctrl-f chord.
+      --
+      -- The trade: a natively fullscreen window gets its own macOS
+      -- Space and is invisible to AeroSpace until you leave
+      -- fullscreen. AeroSpace's own `alt-f` fills the screen without
+      -- that, if a window needs to stay tiled.
+      config.native_macos_fullscreen_mode = true
 
       -- Left Option sends Alt/Meta so readline word-motions work.
       -- Right Option still types special characters.
@@ -263,9 +266,9 @@
 
         { key = 'z', mods = 'CMD|SHIFT', action = act.TogglePaneZoomState },
 
-        -- Fullscreen on the macOS chord. WezTerm's default is
-        -- alt+Enter, which is also how some TUIs take a newline, so
-        -- that one is handed back to the running program.
+        -- Fullscreen on the standard macOS chord. WezTerm's default
+        -- is alt+Enter, which is also how some TUIs take a newline,
+        -- so that one is handed back to the running program.
         { key = 'f', mods = 'CMD|CTRL', action = act.ToggleFullScreen },
         { key = 'Enter', mods = 'ALT', action = act.DisableDefaultAssignment },
       }
