@@ -36,25 +36,27 @@ in
   ####################################################################
   # AeroSpace: tiling window manager.
   #
-  # Replaces Rectangle (window snapping), AltTab (window switching),
-  # skhd (app-launcher hotkeys) and the macOS Spaces shortcuts. Its
-  # workspaces are its own, not macOS Spaces, which is why the Spaces
-  # symbolic hotkeys are disabled below.
+  # Replaces Rectangle (window snapping), AltTab (window switching)
+  # and skhd (app-launcher hotkeys). Navigation between workspaces is
+  # NOT AeroSpace's job here: macOS Spaces do that, via the symbolic
+  # hotkeys re-enabled further down.
   ####################################################################
   services.aerospace = {
     enable = true;
     settings = {
       config-version = 2;
 
-      # cmd-h is rebound below, so make sure a stray cmd-alt-h cannot
-      # leave an app hidden with no obvious way back.
       automatically-unhide-macos-hidden-apps = true;
 
-      # Without this, only workspaces containing windows exist, so
-      # `workspace next/prev` on a fresh session is a no-op: there is
-      # nowhere to cycle to. Keeping 1-5 alive makes cmd-h and cmd-l
-      # behave like the macOS Spaces they replaced.
-      persistent-workspaces = [ "1" "2" "3" "4" "5" ];
+      # AeroSpace's own workspaces are deliberately NOT used. macOS
+      # Spaces handle switching (cmd-h / cmd-l, re-enabled in the
+      # symbolichotkeys block below) and AeroSpace only tiles windows
+      # within whichever Space is active.
+      #
+      # This matters: AeroSpace hides an inactive workspace by parking
+      # its windows off-screen. Keeping everything on workspace 1 means
+      # it never parks anything, so no window can go missing behind a
+      # workspace you did not know you were on.
 
       gaps = {
         inner.horizontal = 6;
@@ -66,13 +68,11 @@ in
       };
 
       mode.main.binding = {
-        # ---- Workspaces. Same keys you used for macOS Spaces. ----
-        cmd-h = "workspace --wrap-around prev";
-        cmd-l = "workspace --wrap-around next";
-        cmd-shift-h = "move-node-to-workspace --wrap-around --focus-follows-window prev";
-        cmd-shift-l = "move-node-to-workspace --wrap-around --focus-follows-window next";
+        # Nothing on cmd- here. macOS owns cmd-h and cmd-l for Space
+        # navigation, and it intercepts symbolic hotkeys before any
+        # application sees them, so binding them here would be dead.
 
-        # ---- Focus and rearrange within a workspace ----
+        # ---- Focus and rearrange within the active Space ----
         alt-h = "focus left";
         alt-j = "focus down";
         alt-k = "focus up";
@@ -89,19 +89,6 @@ in
         alt-minus = "resize smart -50";
         alt-equal = "resize smart +50";
 
-        # ---- Numbered workspaces ----
-        alt-1 = "workspace 1";
-        alt-2 = "workspace 2";
-        alt-3 = "workspace 3";
-        alt-4 = "workspace 4";
-        alt-5 = "workspace 5";
-        alt-shift-1 = "move-node-to-workspace 1";
-        alt-shift-2 = "move-node-to-workspace 2";
-        alt-shift-3 = "move-node-to-workspace 3";
-        alt-shift-4 = "move-node-to-workspace 4";
-        alt-shift-5 = "move-node-to-workspace 5";
-
-        alt-tab = "workspace-back-and-forth";
         alt-shift-semicolon = "mode service";
 
         # ---- App launchers, formerly the four rules in ~/.skhdrc ----
@@ -330,14 +317,18 @@ in
       #     DefaultShortcutsTable.xml
       #################################################################
       "com.apple.symbolichotkeys".AppleSymbolicHotKeys = {
-        # macOS Spaces navigation, OFF. AeroSpace binds cmd-h and cmd-l
-        # to its own workspaces, and macOS intercepts symbolic hotkeys
-        # before any application sees them, so leaving these enabled
-        # would shadow AeroSpace's identical bindings entirely.
-        "79" = { enabled = false; value = { parameters = [ 104 4 1048576 ]; type = "standard"; }; };   # cmd+h
-        "80" = { enabled = false; value = { parameters = [ 104 4 1179648 ]; type = "standard"; }; };   # shift+cmd+h
-        "81" = { enabled = false; value = { parameters = [ 108 37 1048576 ]; type = "standard"; }; };  # cmd+l
-        "82" = { enabled = false; value = { parameters = [ 108 37 1179648 ]; type = "standard"; }; };  # shift+cmd+l
+        # macOS Spaces navigation, ON. Spaces do the switching;
+        # AeroSpace only tiles within the active Space and binds
+        # nothing on cmd-, so there is no clash.
+        #
+        # Caveat that nix cannot fix: the Spaces themselves are created
+        # by hand in Mission Control. There is no API and no defaults
+        # key for them, so a new machine needs them added manually
+        # before these shortcuts have anywhere to go.
+        "79" = { enabled = true; value = { parameters = [ 104 4 1048576 ]; type = "standard"; }; };    # cmd+h        previous Space
+        "80" = { enabled = true; value = { parameters = [ 104 4 1179648 ]; type = "standard"; }; };    # shift+cmd+h  drag window to previous Space
+        "81" = { enabled = true; value = { parameters = [ 108 37 1048576 ]; type = "standard"; }; };   # cmd+l        next Space
+        "82" = { enabled = true; value = { parameters = [ 108 37 1179648 ]; type = "standard"; }; };   # shift+cmd+l  drag window to next Space
 
         # Kept. Nothing in AeroSpace binds cmd-j, so there is no clash.
         # Mission Control is noisier under a tiling manager, because
