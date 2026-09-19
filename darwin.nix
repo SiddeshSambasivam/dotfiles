@@ -50,6 +50,12 @@ in
       # leave an app hidden with no obvious way back.
       automatically-unhide-macos-hidden-apps = true;
 
+      # Without this, only workspaces containing windows exist, so
+      # `workspace next/prev` on a fresh session is a no-op: there is
+      # nowhere to cycle to. Keeping 1-5 alive makes cmd-h and cmd-l
+      # behave like the macOS Spaces they replaced.
+      persistent-workspaces = [ "1" "2" "3" "4" "5" ];
+
       gaps = {
         inner.horizontal = 6;
         inner.vertical = 6;
