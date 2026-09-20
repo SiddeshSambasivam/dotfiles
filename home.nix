@@ -146,7 +146,11 @@
     viAlias = true;
   };
 
+  # init.lua and lua/ are linked separately rather than linking the
+  # whole nvim directory. That leaves ~/.config/nvim itself a real
+  # writable directory, which lazy.nvim needs for lazy-lock.json.
   xdg.configFile."nvim/init.lua".source = ./nvim/init.lua;
+  xdg.configFile."nvim/lua".source = ./nvim/lua;
 
   programs.direnv = {
     enable = true;
