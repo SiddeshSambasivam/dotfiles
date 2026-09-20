@@ -462,24 +462,44 @@ in
     if /usr/bin/xcrun --find Rez >/dev/null 2>&1; then
       echo >&2 "applying custom app icons..."
 
+      # Every step is non-fatal. The activate script runs under
+      # `set -e`, so a single non-zero exit here would abort the whole
+      # switch before the generation is updated. Rez and SetFile both
+      # emit errors on protected bundles even when the write lands.
+      # Every step is non-fatal. The activate script runs under
+      # `set -e`, so one non-zero exit here would abort the switch
+      # before the generation is updated.
+      #
+      # Runs as root, which is what gets past macOS App Management:
+      # an unprivileged process cannot create files inside a bundle in
+      # /Applications, and Rez fails with afpAccessDenied.
       setAppIcon() {
         icon="$1"; app="$2"
         [ -e "$app" ] || return 0
         t=$(mktemp -d) || return 0
-        cp "$icon" "$t/i.icns"
-        /usr/bin/sips -i "$t/i.icns" >/dev/null 2>&1
-        /usr/bin/xcrun DeRez -only icns "$t/i.icns" > "$t/i.rsrc" 2>/dev/null
-        rm -f "$app/Icon"$'\r'
-        /usr/bin/xcrun Rez -append "$t/i.rsrc" -o "$app/Icon"$'\r' 2>/dev/null
-        /usr/bin/xcrun SetFile -a C "$app" 2>/dev/null
-        /usr/bin/xcrun SetFile -a V "$app/Icon"$'\r' 2>/dev/null
-        rm -rf "$t"
+        cp "$icon" "$t/i.icns" 2>/dev/null || { rm -rf "$t"; return 0; }
+        /usr/bin/sips -i "$t/i.icns" >/dev/null 2>&1 || true
+        /usr/bin/xcrun DeRez -only icns "$t/i.icns" > "$t/i.rsrc" 2>/dev/null || true
+
+        if [ -s "$t/i.rsrc" ]; then
+          rm -f "$app/Icon"$'\r' 2>/dev/null || true
+          /usr/bin/xcrun Rez -append "$t/i.rsrc" -o "$app/Icon"$'\r' 2>/dev/null || true
+        fi
+
+        # Only claim a custom icon if the resource actually landed.
+        # Setting the bit without it shows a blank icon.
+        if [ -s "$app/Icon"$'\r/..namedfork/rsrc' ]; then
+          /usr/bin/xcrun SetFile -a C "$app" 2>/dev/null || true
+          /usr/bin/xcrun SetFile -a V "$app/Icon"$'\r' 2>/dev/null || true
+        else
+          /usr/bin/xcrun SetFile -a c "$app" 2>/dev/null || true
+        fi
+        rm -rf "$t" || true
       }
 
-      setAppIcon ${./icons/brave-browser.icns} "/Applications/Brave Browser.app"
-      setAppIcon ${./icons/slack.icns}         "/Applications/Slack.app"
-      setAppIcon ${./icons/calibre.icns}       "/Applications/calibre.app"
-      setAppIcon ${./icons/wezterm.icns}       "/Users/${username}/Applications/Home Manager Apps/WezTerm.app"
+      setAppIcon ${./icons/brave-browser.icns} "/Applications/Brave Browser.app" || true
+      setAppIcon ${./icons/calibre.icns}       "/Applications/calibre.app" || true
+      setAppIcon ${./icons/wezterm.icns}       "/Users/${username}/Applications/Home Manager Apps/WezTerm.app" || true
     fi
   '';
 }
