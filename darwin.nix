@@ -274,10 +274,13 @@ in
 
       persistent-apps = [
         "/Applications/Brave Browser.app"
+        # home-manager copies its apps here rather than /Applications.
+        "/Users/${username}/Applications/Home Manager Apps/WezTerm.app"
         "/Applications/Cursor.app"
         "/Applications/Obsidian.app"
         "/Applications/Slack.app"
         "/Applications/Claude.app"
+        "/Applications/calibre.app"
       ];
     };
 
