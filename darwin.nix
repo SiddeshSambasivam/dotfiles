@@ -226,6 +226,7 @@ in
 
       # Dev
       "ngrok"
+      "podman-desktop"
     ];
   };
 
