@@ -444,5 +444,42 @@ in
     echo >&2 "reloading keyboard shortcuts..."
     launchctl asuser "$(id -u -- ${username})" sudo --user=${username} -- \
       /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u || true
+
+    ####################################################################
+    # Custom app icons.
+    #
+    # Reapplied on every switch because the bundles carrying them get
+    # replaced: home-manager's copyApps recreates WezTerm.app, and
+    # `brew upgrade` replaces the rest.
+    #
+    # Uses Rez rather than NSWorkspace, which needs a GUI session that
+    # activation does not have. Rez ships with Xcode, so this is
+    # skipped when Xcode is absent.
+    #
+    # Running as root also sidesteps macOS App Management, which
+    # blocks unprivileged writes into /Applications.
+    ####################################################################
+    if /usr/bin/xcrun --find Rez >/dev/null 2>&1; then
+      echo >&2 "applying custom app icons..."
+
+      setAppIcon() {
+        icon="$1"; app="$2"
+        [ -e "$app" ] || return 0
+        t=$(mktemp -d) || return 0
+        cp "$icon" "$t/i.icns"
+        /usr/bin/sips -i "$t/i.icns" >/dev/null 2>&1
+        /usr/bin/xcrun DeRez -only icns "$t/i.icns" > "$t/i.rsrc" 2>/dev/null
+        rm -f "$app/Icon"$'\r'
+        /usr/bin/xcrun Rez -append "$t/i.rsrc" -o "$app/Icon"$'\r' 2>/dev/null
+        /usr/bin/xcrun SetFile -a C "$app" 2>/dev/null
+        /usr/bin/xcrun SetFile -a V "$app/Icon"$'\r' 2>/dev/null
+        rm -rf "$t"
+      }
+
+      setAppIcon ${./icons/brave-browser.icns} "/Applications/Brave Browser.app"
+      setAppIcon ${./icons/slack.icns}         "/Applications/Slack.app"
+      setAppIcon ${./icons/calibre.icns}       "/Applications/calibre.app"
+      setAppIcon ${./icons/wezterm.icns}       "/Users/${username}/Applications/Home Manager Apps/WezTerm.app"
+    fi
   '';
 }
