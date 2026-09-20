@@ -182,8 +182,14 @@ in
       # does not replace it.
       "tailscale-app"
 
+      # Comms
+      "discord"
+      "zoom"
+
       # Utilities
       "calibre"        # ebook library management
+      "keyboardcleantool"
+      "microsoft-excel"
       "medis"          # redis GUI
       "localsend"
       "wispr-flow"
