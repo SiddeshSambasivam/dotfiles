@@ -145,20 +145,49 @@ in
     enable = true;
 
     onActivation = {
-      # "none" is additive: brew installs what this file declares and
-      # ignores everything else.
-      #
       # "check" runs `brew bundle cleanup` and aborts activation with
-      # exit 2 when anything installed is missing from the list, so it
-      # only works once the list covers every formula and cask.
-      # "uninstall" and "zap" remove the undeclared ones instead.
-      cleanup = "none";
+      # exit 2 if anything installed is missing from the lists below.
+      # It removes nothing, so it reports drift rather than acting on
+      # it. "uninstall" removes the undeclared ones instead, and "none"
+      # is purely additive.
+      cleanup = "check";
       autoUpdate = false;
       upgrade = false;
     };
 
-    # ngrok's cask lives in its own tap rather than homebrew/cask.
-    taps = [ "ngrok/ngrok" ];
+    # Third-party taps. Each one is required by something below:
+    # ngrok/ngrok for the ngrok cask, my-monkeys/tap for
+    # opensuperwhisper, peak/tap for s5cmd.
+    taps = [
+      "ngrok/ngrok"
+      "my-monkeys/tap"
+      "peak/tap"
+    ];
+
+    # Formulae nixpkgs does not cover: local dev services, autotools,
+    # and pyenv, which owns its own directory of Python versions.
+    brews = [
+      "autoconf-archive"
+      "automake"
+      "cookiecutter"
+      "libpq"
+      "postgresql@14"
+      "postgresql@15"
+      "pyenv"
+      "rabbitmq"
+      "redis"
+      "tesseract"
+      "unbound"
+
+      # Build dependency of pyenv that brew bundle does not infer.
+      "pkgconf"
+
+      # git worktree manager
+      "treehouse"
+
+      # S3 CLI, from peak/tap.
+      "peak/tap/s5cmd"
+    ];
 
     # Mac App Store apps cannot be listed here. macOS owns them as
     # root:wheel and protects them, so brew can neither adopt nor
