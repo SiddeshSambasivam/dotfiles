@@ -1,14 +1,17 @@
 #!/usr/bin/env bash
 # Apply the custom icons in ../icons to their apps.
 #
-# Run with sudo. macOS App Management stops an unprivileged process
-# creating files inside a bundle in /Applications, which is why Rez
-# fails with afpAccessDenied when this is run as your own user.
+# Only covers apps under ~/Applications. Anything in /Applications is
+# protected by macOS App Management, which blocks creating files
+# inside the bundle even as root: Rez fails with afpAccessDenied and
+# SetFile with -5000. Finder is the only thing that can set those,
+# because it holds the App Management entitlement. Do it by hand:
+# open the .icns in Preview, cmd-A cmd-C, then cmd-I on the app,
+# click the icon top-left, cmd-V.
 #
-#   sudo ./scripts/set-app-icons.sh
-#
-# Re-run after `brew upgrade` replaces an app, or after ./nsync.sh
-# recreates WezTerm.app.
+# Called from nsync.sh after the switch, because home-manager's
+# copyApps recreates WezTerm.app partway through activation and would
+# otherwise discard the icon.
 set -uo pipefail
 
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
@@ -62,9 +65,11 @@ set_icon() {
   rm -rf "$t"
 }
 
-set_icon "$REPO/icons/brave-browser.icns" "/Applications/Brave Browser.app"
-set_icon "$REPO/icons/calibre.icns"       "/Applications/calibre.app"
-set_icon "$REPO/icons/wezterm.icns"       "${SUDO_USER:+/Users/$SUDO_USER}/Applications/Home Manager Apps/WezTerm.app"
+HOMEAPPS="${SUDO_USER:+/Users/$SUDO_USER}/Applications"
+
+set_icon "$REPO/icons/wezterm.icns"       "$HOMEAPPS/Home Manager Apps/WezTerm.app"
+set_icon "$REPO/icons/brave-browser.icns" "$HOMEAPPS/Brave Browser.app"
+set_icon "$REPO/icons/calibre.icns"       "$HOMEAPPS/calibre.app"
 
 /usr/bin/killall Dock 2>/dev/null
 echo "Dock restarted."

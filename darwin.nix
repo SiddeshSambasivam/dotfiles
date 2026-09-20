@@ -194,8 +194,14 @@ in
     # overwrite one. Declaring them needs homebrew.masApps and the
     # `mas` CLI, or a reinstall from the cask.
     casks = [
-      # Daily drivers
-      "brave-browser"
+      # Daily drivers.
+      #
+      # brave-browser and calibre install into ~/Applications rather
+      # than /Applications. macOS App Management protects /Applications
+      # and blocks writing a custom icon into a bundle there, even as
+      # root. ~/Applications is unprotected, so scripts/set-app-icons.sh
+      # can set their icons on every switch.
+      { name = "brave-browser"; args = { appdir = "~/Applications"; }; }
       "obsidian"
       "bitwarden"
       "cursor"
@@ -216,7 +222,7 @@ in
       "zoom"
 
       # Utilities
-      "calibre"        # ebook library management
+      { name = "calibre"; args = { appdir = "~/Applications"; }; }  # ebook library
       "keyboardcleantool"
       "microsoft-excel"
       "medis"          # redis GUI
@@ -273,14 +279,14 @@ in
       wvous-br-corner = 14;                        # bottom-right hot corner = Quick Note
 
       persistent-apps = [
-        "/Applications/Brave Browser.app"
+        "/Users/${username}/Applications/Brave Browser.app"
         # home-manager copies its apps here rather than /Applications.
         "/Users/${username}/Applications/Home Manager Apps/WezTerm.app"
         "/Applications/Cursor.app"
         "/Applications/Obsidian.app"
         "/Applications/Slack.app"
         "/Applications/Claude.app"
-        "/Applications/calibre.app"
+        "/Users/${username}/Applications/calibre.app"
       ];
     };
 
