@@ -61,6 +61,18 @@
     # uv is a single static binary, so nix can install it while uv
     # manages the Python interpreters.
     uv
+
+    # Launcher, replacing Spotlight. Lands in
+    # ~/Applications/Home Manager Apps/Raycast.app.
+    #
+    # Unfree, so darwin.nix allows it by name.
+    #
+    # The catch, and it is a real one: the bundle is a symlink into a
+    # version-hashed store path, and macOS ties Accessibility and
+    # Input Monitoring to an exact path. Every nixpkgs bump resets
+    # both grants, and the Hyper Key stops working until they are
+    # granted again.
+    raycast
   ];
 
   ####################################################################

@@ -76,6 +76,11 @@ SQLite store rather than in a `defaults` domain, so nix can't touch them:
 
 - *Settings, Advanced, Hyper Key*: set it to Caps Lock. Raycast needs Input
   Monitoring permission for this. Hyper is `ctrl+alt+shift+cmd`.
+
+  Raycast comes from nixpkgs, so it lives at a store path with a version
+  hash in it, and macOS ties Input Monitoring and Accessibility to an exact
+  path. Bump nixpkgs and both grants reset, and the Hyper Key goes dead
+  until you re-add it. Same tax AeroSpace charged.
 - *Settings, Extensions, Applications*: add a hotkey per app. Currently
   `hyper+b` Brave, `hyper+c` Claude, `hyper+t` WezTerm, `hyper+s` Slack.
 

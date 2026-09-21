@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
 let
   username = "siddeshsambasivam";
@@ -38,6 +38,11 @@ in
     # podman-compose is.
     pkgs.docker-compose
   ];
+
+  # Raycast ships under a proprietary licence. Allowing it by name
+  # rather than flipping allowUnfree keeps every other package honest.
+  nixpkgs.config.allowUnfreePredicate = pkg:
+    builtins.elem (lib.getName pkg) [ "raycast" ];
 
   ####################################################################
   # Homebrew: GUI applications.
@@ -137,9 +142,6 @@ in
       # thirds, and moves them between displays. Its own defaults
       # are the shortcuts; nothing here overrides them.
       "rectangle"
-
-      # Launcher, replacing Spotlight.
-      "raycast"
       "keyboardcleantool"
       "microsoft-excel"
       "medis"          # redis GUI
