@@ -64,6 +64,16 @@ without them.
 
 ## Stuff nix can't do for you
 
+**Clean up user launch agents yourself.** The activate script prunes stale
+agents from `/Library/LaunchAgents` but never from `~/Library/LaunchAgents`,
+so a service you remove from `darwin.nix` leaves its plist behind and keeps
+running. Drop it by hand:
+
+```bash
+launchctl bootout gui/$(id -u)/<label>
+rm -f ~/Library/LaunchAgents/<label>.plist
+```
+
 **Give Rectangle accessibility access.** It can't move a single window until
 you do. Launch it once and it asks, or do it yourself: System Settings,
 Privacy & Security, Accessibility, add `/Applications/Rectangle.app`. Its
