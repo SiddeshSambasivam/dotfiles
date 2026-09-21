@@ -137,6 +137,9 @@ in
       # thirds, and moves them between displays. Its own defaults
       # are the shortcuts; nothing here overrides them.
       "rectangle"
+
+      # Launcher, replacing Spotlight.
+      "raycast"
       "keyboardcleantool"
       "microsoft-excel"
       "medis"          # redis GUI
@@ -310,8 +313,11 @@ in
         "34" = { enabled = true; value = { parameters = [ 106 38 1179648 ]; type = "standard"; }; };   # shift+cmd+j  Mission Control, shift variant
         "98" = { enabled = true; value = { parameters = [ 47 44 1179648 ]; type = "standard"; }; };    # shift+cmd+/  Help menu
 
-        # Spotlight.
-        "64" = { enabled = true; value = { parameters = [ 32 49 1048576 ]; type = "standard"; }; };    # cmd+Space     Spotlight
+        # Spotlight. 64 is off because Raycast takes cmd+Space, and
+        # macOS intercepts a symbolic hotkey before any app sees it.
+        # 65 opens a Finder search window rather than Spotlight, so it
+        # does not collide and stays on.
+        "64" = { enabled = false; value = { parameters = [ 32 49 1048576 ]; type = "standard"; }; };   # cmd+Space     Spotlight
         "65" = { enabled = true; value = { parameters = [ 32 49 1572864 ]; type = "standard"; }; };    # alt+cmd+Space Finder search
 
         # Off, so the chords stay free.
@@ -346,6 +352,14 @@ in
         AppleLocale = "en_US@rg=sgzzzz";
         AppleLanguages = [ "en-US" "en-SG" ];
       };
+
+      # Raycast's root-search hotkey. "Command-49" is cmd+Space: 49 is
+      # the Space key code, same one the symbolic hotkeys use.
+      #
+      # The Hyper Key and the per-application hotkeys are not here.
+      # Raycast keeps those in an encrypted SQLite store rather than
+      # in this domain, so they have to be set in its UI. See README.
+      "com.raycast.macos".raycastGlobalHotkey = "Command-49";
 
       "com.apple.screencapture".showsClicks = true;
     };
