@@ -35,6 +35,7 @@
     # infra
     opentofu
     flyctl
+    awscli2
 
     # docs and diagrams
     d2
@@ -89,7 +90,6 @@
       dl = ''watch -n 2 'podman ps --format "table {{.ID}}\t{{.Names}}\t{{.Status}}\t{{.State}}"' '';
       nsync = "$HOME/dotfiles/nsync.sh";
       scc = "bash sync.sh";
-      aws = "/usr/local/bin/aws";
     };
 
     # Runs for non-interactive shells too, so scripts see cargo.
