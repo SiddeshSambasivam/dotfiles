@@ -35,6 +35,15 @@ set_icon() {
     return 0
   fi
 
+  # A running app's bundle is locked, and so is anything in
+  # /Applications. Check before touching the existing icon, because
+  # deleting one we then cannot replace leaves a blank icon.
+  if ! touch "$app/.icon-probe" 2>/dev/null; then
+    printf '  %-34s skipped, bundle not writable (app running?)\n' "$name"
+    return 0
+  fi
+  rm -f "$app/.icon-probe"
+
   local t
   t="$(mktemp -d)" || return 0
 
