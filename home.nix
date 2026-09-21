@@ -62,6 +62,12 @@
     # manages the Python interpreters.
     uv
 
+    # Window manager. Snaps windows to halves, quarters and thirds.
+    # Its own defaults are the shortcuts; nothing here overrides them.
+    # Carries the same store-path grant reset as Raycast below, for
+    # Accessibility.
+    rectangle
+
     # Launcher, replacing Spotlight. Lands in
     # ~/Applications/Home Manager Apps/Raycast.app.
     #

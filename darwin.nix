@@ -137,11 +137,6 @@ in
 
       # Utilities
       { name = "calibre"; args = { appdir = "~/Applications"; }; }  # ebook library
-
-      # Window manager. Snaps windows to halves, quarters and
-      # thirds, and moves them between displays. Its own defaults
-      # are the shortcuts; nothing here overrides them.
-      "rectangle"
       "keyboardcleantool"
       "microsoft-excel"
       "medis"          # redis GUI
