@@ -103,6 +103,12 @@ in
         alt-equal = "resize smart +50";
         alt-f = "fullscreen";
 
+        # ---- Monitors ----
+        alt-shift-h = "focus-monitor --wrap-around left";
+        alt-shift-l = "focus-monitor --wrap-around right";
+        ctrl-alt-shift-h = "move-node-to-monitor --wrap-around --focus-follows-window left";
+        ctrl-alt-shift-l = "move-node-to-monitor --wrap-around --focus-follows-window right";
+
         alt-shift-semicolon = "mode service";
 
         # ---- App launchers ----
