@@ -201,7 +201,6 @@ in
         "/Applications/Slack.app"
         "/Applications/Claude.app"
         "/Users/${username}/Applications/calibre.app"
-        "/Users/${username}/Applications/Home Manager Apps/Raycast.app"
       ];
     };
 
@@ -351,13 +350,49 @@ in
         AppleLanguages = [ "en-US" "en-SG" ];
       };
 
-      # Raycast's root-search hotkey. "Command-49" is cmd+Space: 49 is
-      # the Space key code, same one the symbolic hotkeys use.
+      # Raycast. The domain holds 61 keys, but only these are
+      # settings. The rest is window-position cache, analytics
+      # identity, AI model blobs, migration flags and install
+      # history, none of which should follow you to a second machine.
       #
-      # The Hyper Key and the per-application hotkeys are not here.
-      # Raycast keeps those in an encrypted SQLite store rather than
-      # in this domain, so they have to be set in its UI. See README.
-      "com.raycast.macos".raycastGlobalHotkey = "Command-49";
+      # Not here because it cannot be: the per-application hotkeys,
+      # hyper+b for Brave and friends. Those live in
+      # raycast-enc.sqlite, which is encrypted. See README.
+      #
+      # Raycast rewrites this file from memory when it quits, so a
+      # switch made while it is running gets clobbered. Quit it first,
+      # or relaunch after.
+      "com.raycast.macos" = {
+        # Root search. "Command-49" is cmd+Space: 49 is the Space key
+        # code, the same one the symbolic hotkeys use.
+        raycastGlobalHotkey = "Command-49";
+
+        # Caps Lock becomes Hyper. 57 is the Caps Lock key code, and
+        # includeShiftKey makes Hyper ctrl+alt+shift+cmd rather than
+        # ctrl+alt+cmd. Raycast needs Input Monitoring for this.
+        raycast_hyperKey_state = {
+          enabled = true;
+          includeShiftKey = true;
+          keyCode = 57;
+        };
+        useHyperKeyIcon = true;
+
+        # Appearance and behaviour.
+        raycastPreferredWindowMode = "compact";
+        raycastShouldFollowSystemAppearance = true;
+        raycastUI_preferredTextSize = "medium";
+        navigationCommandStyleIdentifierKey = "vim";
+        fileSearch_fileSearchScope = "kMDQueryScopeComputer";
+        screenshots_dataSourceEnabled = true;
+        "NSStatusItem VisibleCC raycastIcon" = false;
+
+        # Suppress the first-run flow. Drop this group if you would
+        # rather walk through onboarding on a new machine.
+        onboardingCompleted = true;
+        store_termsAccepted = true;
+        raycastAiHasSeenQuickAI = true;
+        showGettingStartedLink = false;
+      };
 
       "com.apple.screencapture".showsClicks = true;
     };

@@ -84,15 +84,19 @@ not here.
 already freed for it in `darwin.nix`. Two things it keeps in an encrypted
 SQLite store rather than in a `defaults` domain, so nix can't touch them:
 
-- *Settings, Advanced, Hyper Key*: set it to Caps Lock. Raycast needs Input
-  Monitoring permission for this. Hyper is `ctrl+alt+shift+cmd`.
-
-  Raycast comes from nixpkgs, so it lives at a store path with a version
-  hash in it, and macOS ties Input Monitoring and Accessibility to an exact
-  path. Bump nixpkgs and both grants reset, and the Hyper Key goes dead
-  until you re-add it. Same tax AeroSpace charged.
 - *Settings, Extensions, Applications*: add a hotkey per app. Currently
   `hyper+b` Brave, `hyper+c` Claude, `hyper+t` WezTerm, `hyper+s` Slack.
+  These are the only Raycast settings nix can't reach; everything else in
+  `com.raycast.macos`, Hyper Key included, is declared in `darwin.nix`.
+
+Raycast and Rectangle both come from nixpkgs, so they live at store paths
+with a version hash in them, and macOS ties Accessibility and Input
+Monitoring to an exact path. Bump nixpkgs and those grants reset: Rectangle
+stops moving windows and the Hyper Key goes dead until you re-add both.
+Same tax AeroSpace charged.
+
+Raycast also rewrites its own preferences when it quits, so a switch made
+while it's running gets clobbered. Quit it first, or relaunch it after.
 
 **Make the macOS Spaces.** `cmd+h` and `cmd+l` jump between Spaces, but there's
 no API and no `defaults` key for creating them. Open Mission Control, add three
