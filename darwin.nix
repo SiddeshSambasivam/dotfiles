@@ -104,8 +104,8 @@ in
         alt-f = "fullscreen";
 
         # ---- Monitors ----
-        cmd-shift-h = "focus-monitor --wrap-around left";
-        cmd-shift-l = "focus-monitor --wrap-around right";
+        cmd-alt-h = "focus-monitor --wrap-around left";
+        cmd-alt-l = "focus-monitor --wrap-around right";
         ctrl-alt-shift-h = "move-node-to-monitor --wrap-around --focus-follows-window left";
         ctrl-alt-shift-l = "move-node-to-monitor --wrap-around --focus-follows-window right";
 
@@ -391,12 +391,9 @@ in
         # a new machine needs them created before these shortcuts have
         # anywhere to go.
         "79" = { enabled = true; value = { parameters = [ 104 4 1048576 ]; type = "standard"; }; };    # cmd+h        previous Space
-        # Off: AeroSpace binds shift+cmd+h and shift+cmd+l to monitor
-        # focus, and macOS would otherwise intercept them first. The
-        # cost is losing "drag window to previous/next Space".
-        "80" = { enabled = false; value = { parameters = [ 104 4 1179648 ]; type = "standard"; }; };   # shift+cmd+h
+        "80" = { enabled = true; value = { parameters = [ 104 4 1179648 ]; type = "standard"; }; };    # shift+cmd+h  drag window to previous Space
         "81" = { enabled = true; value = { parameters = [ 108 37 1048576 ]; type = "standard"; }; };   # cmd+l        next Space
-        "82" = { enabled = false; value = { parameters = [ 108 37 1179648 ]; type = "standard"; }; };  # shift+cmd+l
+        "82" = { enabled = true; value = { parameters = [ 108 37 1179648 ]; type = "standard"; }; };   # shift+cmd+l  drag window to next Space
 
         # Mission Control. It lists windows a tiling manager has parked
         # off-screen alongside the visible ones, so it shows more than
