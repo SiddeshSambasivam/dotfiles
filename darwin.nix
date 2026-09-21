@@ -206,6 +206,7 @@ in
         "/Applications/Slack.app"
         "/Applications/Claude.app"
         "/Users/${username}/Applications/calibre.app"
+        "/Users/${username}/Applications/Home Manager Apps/Raycast.app"
       ];
     };
 
