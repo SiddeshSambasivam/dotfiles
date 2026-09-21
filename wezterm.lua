@@ -62,9 +62,8 @@ config.colors.tab_bar = {
 -- Native macOS fullscreen, on the standard cmd-ctrl-f chord.
 --
 -- The trade: a natively fullscreen window gets its own macOS
--- Space and is invisible to AeroSpace until you leave
--- fullscreen. AeroSpace's own `alt-f` fills the screen without
--- that, if a window needs to stay tiled.
+-- Space. Rectangle's maximize fills the screen without that, if
+-- the window needs to stay on the current Space.
 config.native_macos_fullscreen_mode = true
 
 -- Left Option sends Alt/Meta so readline word-motions work.

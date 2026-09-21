@@ -4,7 +4,7 @@ My Mac as a config file. nix-darwin does the work.
 
 ```
 flake.nix     inputs and the darwinConfiguration
-darwin.nix    system prefs, keyboard shortcuts, AeroSpace, Homebrew casks
+darwin.nix    system prefs, keyboard shortcuts, Homebrew casks
 zshrc         shell config, symlinked to ~/.zshrc
 nsync.sh      rebuild and activate
 ```
@@ -64,12 +64,11 @@ without them.
 
 ## Stuff nix can't do for you
 
-**Give AeroSpace accessibility access.** It can't move a single window until you
-do. System Settings, Privacy & Security, Accessibility, add
-`/Applications/Nix Apps/AeroSpace.app`. Annoying detail: macOS ties this to an
-exact app path, and AeroSpace lives in the nix store where the path has a
-version hash in it. So every time you bump nixpkgs, the grant resets and you
-get to do it again.
+**Give Rectangle accessibility access.** It can't move a single window until
+you do. Launch it once and it asks, or do it yourself: System Settings,
+Privacy & Security, Accessibility, add `/Applications/Rectangle.app`. Its
+shortcuts are Rectangle's own defaults, so change them in its preferences,
+not here.
 
 **Make the macOS Spaces.** `cmd+h` and `cmd+l` jump between Spaces, but there's
 no API and no `defaults` key for creating them. Open Mission Control, add three

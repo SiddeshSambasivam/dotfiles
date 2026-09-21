@@ -40,103 +40,6 @@ in
   ];
 
   ####################################################################
-  # AeroSpace: tiling window manager.
-  #
-  # AeroSpace arranges windows inside whichever macOS Space is active.
-  # It does not handle navigation between Spaces; the symbolic hotkeys
-  # further down do that.
-  ####################################################################
-  services.aerospace = {
-    enable = true;
-    settings = {
-      config-version = 2;
-
-      # Undo an accidental cmd-alt-h, which would otherwise leave an
-      # app hidden with no obvious way back.
-      automatically-unhide-macos-hidden-apps = true;
-
-      # AeroSpace's own workspaces stay unused, so every window lives
-      # on workspace 1.
-      #
-      # AeroSpace hides an inactive workspace by moving its windows
-      # off-screen. A window left on a second workspace therefore
-      # looks like a window that disappeared. With one workspace it
-      # never moves anything off-screen.
-
-      gaps = {
-        inner.horizontal = 6;
-        inner.vertical = 6;
-        outer.top = 6;
-        outer.bottom = 6;
-        outer.left = 6;
-        outer.right = 6;
-      };
-
-      mode.main.binding = {
-        # Nothing is bound on cmd- here. macOS claims cmd-h and cmd-l
-        # for Space navigation and intercepts symbolic hotkeys before
-        # any application sees them, so a cmd- binding would be dead.
-
-        # ---- Window placement ----
-        # AeroSpace tiles rather than snaps, so `move` reorders a
-        # window within the split. With two windows side by side,
-        # `move left` puts this one on the left half. With a single
-        # window there is nothing to swap with and it does nothing.
-        ctrl-alt-left = "move left";
-        ctrl-alt-right = "move right";
-        ctrl-alt-up = "move up";
-        ctrl-alt-down = "move down";
-        ctrl-alt-shift-enter = "fullscreen";
-
-        # Split orientation. `tiles horizontal` gives left and right
-        # halves, `tiles vertical` gives top and bottom.
-        ctrl-alt-shift-left = "layout tiles horizontal";
-        ctrl-alt-shift-up = "layout tiles vertical";
-        ctrl-alt-shift-right = "layout accordion";
-
-        # ---- Focus, and resize the split ----
-        alt-h = "focus left";
-        alt-j = "focus down";
-        alt-k = "focus up";
-        alt-l = "focus right";
-        alt-minus = "resize smart -50";
-        alt-equal = "resize smart +50";
-        alt-f = "fullscreen";
-
-        # ---- Monitors ----
-        cmd-alt-h = "focus-monitor --wrap-around left";
-        cmd-alt-l = "focus-monitor --wrap-around right";
-        ctrl-alt-shift-h = "move-node-to-monitor --wrap-around --focus-follows-window left";
-        ctrl-alt-shift-l = "move-node-to-monitor --wrap-around --focus-follows-window right";
-
-        alt-shift-semicolon = "mode service";
-
-        # ---- App launchers ----
-        # These use letters rather than arrows, which leaves
-        # ctrl+alt+h/j/k/l free for the terminal multiplexer.
-        ctrl-alt-b = "exec-and-forget open -a 'Brave Browser'";
-        ctrl-alt-c = "exec-and-forget open -a Cursor";
-        ctrl-alt-t = "exec-and-forget open -a WezTerm";
-        ctrl-alt-s = "exec-and-forget open -a Slack";
-      };
-
-      mode.service.binding = {
-        esc = [ "reload-config" "mode main" ];
-        r = [ "flatten-workspace-tree" "mode main" ];
-        f = [ "layout floating tiling" "mode main" ];
-        backspace = [ "close-all-windows-but-current" "mode main" ];
-      };
-
-      # Apps that misbehave when tiled.
-      on-window-detected = [
-        { "if".app-id = "com.apple.systempreferences"; run = "layout floating"; }
-        { "if".app-id = "com.apple.finder"; run = "layout floating"; }
-        { "if".app-id = "com.bitwarden.desktop"; run = "layout floating"; }
-      ];
-    };
-  };
-
-  ####################################################################
   # Homebrew: GUI applications.
   #
   # An app that updates itself belongs here rather than in nixpkgs.
@@ -229,6 +132,11 @@ in
 
       # Utilities
       { name = "calibre"; args = { appdir = "~/Applications"; }; }  # ebook library
+
+      # Window manager. Snaps windows to halves, quarters and
+      # thirds, and moves them between displays. Its own defaults
+      # are the shortcuts; nothing here overrides them.
+      "rectangle"
       "keyboardcleantool"
       "microsoft-excel"
       "medis"          # redis GUI
