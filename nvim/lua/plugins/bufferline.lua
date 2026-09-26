@@ -5,6 +5,13 @@ return {
     'akinsho/bufferline.nvim',
     version = '*',
     dependencies = { 'nvim-tree/nvim-web-devicons' },
-    opts = {},
+    opts = {
+      options = {
+        -- Start the tabs beside the file tree, not above it.
+        offsets = {
+          { filetype = 'neo-tree', text = 'Explorer', highlight = 'Directory', separator = true },
+        },
+      },
+    },
   },
 }

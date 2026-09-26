@@ -72,7 +72,7 @@
     gopls
     lua-language-server
     nil
-    pyright
+    basedpyright
     typescript-language-server
 
     # Window manager. Its shortcuts and gap size are declared in
