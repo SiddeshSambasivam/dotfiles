@@ -11,6 +11,12 @@ local map = vim.keymap.set
 map('n', '<Esc>', '<cmd>nohlsearch<CR>', { desc = 'Clear search highlight' })
 map({ 'n', 'i', 'v' }, '<D-s>', '<cmd>write<CR>', { desc = 'Save' })
 
+-- Cmd-w reaches nvim only because wezterm.lua passes it through when nvim
+-- is in front; anywhere else it still closes the WezTerm pane.
+local buffers = require('config.buffers')
+map({ 'n', 'i', 'v' }, '<D-w>', buffers.close, { desc = 'Close tab' })
+map({ 'n', 'i', 'v' }, '<D-S-w>', buffers.reopen, { desc = 'Reopen closed tab' })
+
 -- Window navigation without the <C-w> prefix.
 map('n', '<C-h>', '<C-w>h', { desc = 'Window left' })
 map('n', '<C-j>', '<C-w>j', { desc = 'Window down' })

@@ -92,7 +92,20 @@ config.send_composed_key_when_right_alt_is_pressed = true
 config.keys = {
   { key = 'd', mods = 'CMD', action = act.SplitHorizontal { domain = 'CurrentPaneDomain' } },
   { key = 'd', mods = 'CMD|SHIFT', action = act.SplitVertical { domain = 'CurrentPaneDomain' } },
-  { key = 'w', mods = 'CMD', action = act.CloseCurrentPane { confirm = false } },
+  -- Cmd-w closes an nvim tab when nvim is in front, and the pane otherwise.
+  -- SendKey hands the chord to nvim without re-running this binding.
+  {
+    key = 'w',
+    mods = 'CMD',
+    action = wezterm.action_callback(function(window, pane)
+      local proc = pane:get_foreground_process_name() or ''
+      if proc:match('n?vim$') then
+        window:perform_action(act.SendKey { key = 'w', mods = 'CMD' }, pane)
+      else
+        window:perform_action(act.CloseCurrentPane { confirm = false }, pane)
+      end
+    end),
+  },
 
   { key = '[', mods = 'CMD', action = act.ActivatePaneDirection 'Prev' },
   { key = ']', mods = 'CMD', action = act.ActivatePaneDirection 'Next' },
