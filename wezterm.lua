@@ -26,7 +26,7 @@ config.colors = {
 -- cursor_blink_rate is how long each phase lasts, in ms (default 800).
 -- The fade needs frames to draw, so animation_fps is raised from 10.
 config.default_cursor_style = 'BlinkingBlock'
-config.cursor_blink_rate = 1200
+config.cursor_blink_rate = 900
 config.cursor_blink_ease_in = 'EaseIn'
 config.cursor_blink_ease_out = 'EaseOut'
 config.animation_fps = 60
