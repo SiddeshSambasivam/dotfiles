@@ -116,6 +116,8 @@ in
       # root. ~/Applications is unprotected, so scripts/set-app-icons.sh
       # can set their icons on every switch.
       { name = "brave-browser"; args = { appdir = "~/Applications"; }; }
+      # Comet is Perplexity's browser. Self-updating, so a cask.
+      "comet"
       "obsidian"
       "bitwarden"
       "cursor"
@@ -200,6 +202,7 @@ in
         "/Applications/Slack.app"
         "/Applications/Claude.app"
         "/Users/${username}/Applications/calibre.app"
+        "/Applications/Comet.app"
         "/Applications/Wispr Flow.app"
       ];
     };
@@ -393,6 +396,40 @@ in
         store_termsAccepted = true;
         raycastAiHasSeenQuickAI = true;
         showGettingStartedLink = false;
+      };
+
+      # Rectangle. Like the symbolic hotkeys, this domain stores only
+      # what differs from stock, so the list below is the whole delta.
+      #
+      # A shortcut is { keyCode, modifierFlags }. modifierFlags is the
+      # same bitfield AppKit uses:
+      #   shift 131072 | ctrl 262144 | alt 524288 | cmd 1048576
+      # Key codes are the usual macOS virtual ones: 36 Return, 45 N,
+      # 11 B.
+      "com.knollsoft.Rectangle" = {
+        # Sparkle cannot update an app in the read-only nix store, so
+        # leave its check off. Version bumps come from nixpkgs.
+        SUEnableAutomaticChecks = false;
+
+        # Accept chords macOS would otherwise reject as reserved.
+        allowAnyShortcut = true;
+
+        # The alternate default set: ctrl+alt for halves and corners
+        # rather than ctrl+alt+cmd.
+        alternateDefaultShortcuts = true;
+
+        gapSize = 5.0;
+        footprintAnimationDurationMultiplier = 0.0;
+        hapticFeedbackOnSnap = 2;
+        hideMenubarIcon = false;
+        launchOnLogin = true;
+        moveCursorAcrossDisplays = 1;
+        subsequentExecutionMode = 1;
+
+        # Custom chords.
+        almostMaximize = { keyCode = 36; modifierFlags = 917504; };   # ctrl+alt+shift+Return
+        reflowTodo = { keyCode = 45; modifierFlags = 786432; };       # ctrl+alt+N
+        toggleTodo = { keyCode = 11; modifierFlags = 786432; };       # ctrl+alt+B
       };
 
       "com.apple.screencapture".showsClicks = true;

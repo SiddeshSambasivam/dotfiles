@@ -62,11 +62,15 @@
     # manages the Python interpreters.
     uv
 
-    # Window manager. Snaps windows to halves, quarters and thirds.
-    # Its own defaults are the shortcuts; nothing here overrides them.
-    # Carries the same store-path grant reset as Raycast below, for
-    # Accessibility.
+    # Window manager. Its shortcuts and gap size are declared in
+    # darwin.nix. Carries the same store-path grant reset as Raycast
+    # below, for Accessibility.
     rectangle
+
+    # Menu-bar switch that stops the Mac from sleeping. Neither
+    # nixpkgs nor Homebrew has it, so ./pkgs/caffeinate.nix unpacks
+    # the release zip. LSUIElement, so it never shows in the Dock.
+    (callPackage ./pkgs/caffeinate.nix { })
 
     # Launcher, replacing Spotlight. Lands in
     # ~/Applications/Home Manager Apps/Raycast.app.
