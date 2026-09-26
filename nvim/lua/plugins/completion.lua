@@ -3,7 +3,7 @@
 -- open buffers, so a language with no server still gets word completion.
 --
 -- Enter accepts the highlighted item, Up/Down or Ctrl-n/Ctrl-p move,
--- Ctrl-e hides the menu, Ctrl-Space opens it or shows the docs.
+-- Ctrl-e hides the menu, Ctrl-Space opens it, Ctrl-k toggles the parameter hint.
 return {
   {
     'saghen/blink.cmp',
@@ -13,6 +13,12 @@ return {
     event = 'InsertEnter',
     opts = {
       keymap = { preset = 'enter' },
+      -- Like VS Code: the highlighted item's type and docs open beside the
+      -- menu, and typing ( shows the parameters of the call.
+      completion = {
+        documentation = { auto_show = true, auto_show_delay_ms = 200 },
+      },
+      signature = { enabled = true },
       sources = {
         default = { 'lsp', 'path', 'snippets', 'buffer' },
       },
