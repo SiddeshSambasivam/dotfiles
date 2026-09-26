@@ -1,5 +1,7 @@
 -- Neovim entry point.
--- Linked to ~/.config/nvim/init.lua by home-manager (see home.nix).
+-- home-manager links ~/.config/nvim/init.lua and lua/ straight to this
+-- directory, outside the nix store (see home.nix). Edits here take
+-- effect the next time nvim starts, with no switch.
 --
 -- Layout:
 --   lua/config/   options, keymaps, autocmds
@@ -43,10 +45,10 @@ require('config.autocmds')
 
 require('lazy').setup({
   spec = { { import = 'plugins' } },
-  -- lazy-lock.json lands in ~/.config/nvim, which is a real directory.
-  -- Only init.lua and lua/ are read-only store symlinks, so the lock
-  -- file is writable. Copy it into the repo when you want plugins
-  -- pinned across machines.
+  -- Keep lazy-lock.json next to this file in the repo, so the plugin
+  -- commits are versioned and every machine gets the same ones.
+  -- resolve() follows the home-manager symlinks back to the repo.
+  lockfile = vim.fn.fnamemodify(vim.fn.resolve(vim.fn.stdpath('config') .. '/init.lua'), ':h') .. '/lazy-lock.json',
   change_detection = { notify = false },
   ui = { border = 'rounded' },
 })

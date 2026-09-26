@@ -62,6 +62,9 @@
     # manages the Python interpreters.
     uv
 
+    # nvim-treesitter compiles its parsers with this.
+    tree-sitter
+
     # Window manager. Its shortcuts and gap size are declared in
     # darwin.nix. Carries the same store-path grant reset as Raycast
     # below, for Accessibility.
@@ -168,11 +171,21 @@
     viAlias = true;
   };
 
-  # init.lua and lua/ are linked separately rather than linking the
-  # whole nvim directory. That leaves ~/.config/nvim itself a real
-  # writable directory, which lazy.nvim needs for lazy-lock.json.
-  xdg.configFile."nvim/init.lua".source = ./nvim/init.lua;
-  xdg.configFile."nvim/lua".source = ./nvim/lua;
+  # Linked out of the store, same as CLAUDE.md below, so editing a file
+  # under ./nvim takes effect on the next nvim launch with no switch.
+  # init.lua and lua/ are linked separately, leaving ~/.config/nvim a
+  # real directory for anything else a plugin writes there.
+  #
+  # force replaces whatever already sits at the target, including a
+  # hand-made link, which a plain collision would abort the switch on.
+  xdg.configFile."nvim/init.lua" = {
+    source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/nvim/init.lua";
+    force = true;
+  };
+  xdg.configFile."nvim/lua" = {
+    source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/nvim/lua";
+    force = true;
+  };
 
   ####################################################################
   # Claude Code
