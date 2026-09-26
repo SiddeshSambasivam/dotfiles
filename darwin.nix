@@ -74,7 +74,6 @@ in
     # opensuperwhisper, peak/tap for s5cmd.
     taps = [
       "ngrok/ngrok"
-      "my-monkeys/tap"
       "peak/tap"
     ];
 
@@ -101,6 +100,13 @@ in
 
       # S3 CLI, from peak/tap.
       "peak/tap/s5cmd"
+
+      # SVG rendering. Provides rsvg-convert.
+      "librsvg"
+
+      # A project venv is built on this interpreter, and
+      # removing it would break that venv.
+      "python@3.13"
     ];
 
     # Mac App Store apps cannot be listed here. macOS owns them as
