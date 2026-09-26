@@ -7,6 +7,7 @@ flake.nix     inputs and the darwinConfiguration
 darwin.nix    system prefs, keyboard shortcuts, Homebrew casks
 zshrc         shell config, symlinked to ~/.zshrc
 nsync.sh      rebuild and activate
+claude/       Claude Code global instructions, linked to ~/.claude/CLAUDE.md
 ```
 
 ## Day to day

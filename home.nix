@@ -1,4 +1,4 @@
-{ pkgs, lib, username, ... }:
+{ config, pkgs, lib, username, ... }:
 
 {
   home.username = username;
@@ -173,6 +173,18 @@
   # writable directory, which lazy.nvim needs for lazy-lock.json.
   xdg.configFile."nvim/init.lua".source = ./nvim/init.lua;
   xdg.configFile."nvim/lua".source = ./nvim/lua;
+
+  ####################################################################
+  # Claude Code
+  #
+  # Global instructions for every Claude Code session. Linked out of
+  # the store rather than copied into it: a store copy is read-only,
+  # and Claude Code writes to this file when asked to remember
+  # something. The out-of-store link points at the working tree, so
+  # those edits land in this repo as a diff to commit.
+  ####################################################################
+  home.file.".claude/CLAUDE.md".source =
+    config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/claude/CLAUDE.md";
 
   programs.direnv = {
     enable = true;
