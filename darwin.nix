@@ -142,7 +142,6 @@ in
       "medis"          # redis GUI
       "localsend"
       "wispr-flow"
-      "opensuperwhisper"
 
       # Dev
       "ngrok"
@@ -201,6 +200,7 @@ in
         "/Applications/Slack.app"
         "/Applications/Claude.app"
         "/Users/${username}/Applications/calibre.app"
+        "/Applications/Wispr Flow.app"
       ];
     };
 
@@ -367,12 +367,12 @@ in
         # code, the same one the symbolic hotkeys use.
         raycastGlobalHotkey = "Command-49";
 
-        # Caps Lock becomes Hyper. 57 is the Caps Lock key code, and
-        # includeShiftKey makes Hyper ctrl+alt+shift+cmd rather than
-        # ctrl+alt+cmd. Raycast needs Input Monitoring for this.
+        # Caps Lock becomes Hyper. 57 is the Caps Lock key code.
+        # includeShiftKey is off, so Hyper is ctrl+alt+cmd rather than
+        # ctrl+alt+shift+cmd. Raycast needs Input Monitoring for this.
         raycast_hyperKey_state = {
           enabled = true;
-          includeShiftKey = true;
+          includeShiftKey = false;
           keyCode = 57;
         };
         useHyperKeyIcon = true;
@@ -384,6 +384,7 @@ in
         navigationCommandStyleIdentifierKey = "vim";
         fileSearch_fileSearchScope = "kMDQueryScopeComputer";
         screenshots_dataSourceEnabled = true;
+        faviconProvider = "apple";
         "NSStatusItem VisibleCC raycastIcon" = false;
 
         # Suppress the first-run flow. Drop this group if you would

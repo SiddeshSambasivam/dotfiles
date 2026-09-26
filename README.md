@@ -88,6 +88,8 @@ SQLite store rather than in a `defaults` domain, so nix can't touch them:
   `hyper+b` Brave, `hyper+c` Claude, `hyper+t` WezTerm, `hyper+s` Slack.
   These are the only Raycast settings nix can't reach; everything else in
   `com.raycast.macos`, Hyper Key included, is declared in `darwin.nix`.
+  Adding one writes to `raycast-enc.sqlite`, which is SQLCipher, so there
+  is nothing for `defaults` to read back.
 
 Raycast and Rectangle both come from nixpkgs, so they live at store paths
 with a version hash in them, and macOS ties Accessibility and Input
