@@ -129,6 +129,17 @@
 
     # Runs for non-interactive shells too, so scripts see cargo.
     envExtra = ''
+      # A GUI app started with `open` from a shell inherits that shell's
+      # environment, including nix-darwin's "PATH already set" flag.
+      # Terminal starts shells through login, which resets PATH to
+      # /usr/bin:/bin but keeps the flag, so /etc/zshenv skips the nix
+      # setup and nix, darwin-rebuild and /usr/sbin all go missing.
+      # Redo the setup when the flag is set but its PATH is not.
+      if [[ -n "''${__NIX_DARWIN_SET_ENVIRONMENT_DONE-}" && ":$PATH:" != *":/run/current-system/sw/bin:"* ]]; then
+        unset __NIX_DARWIN_SET_ENVIRONMENT_DONE __ETC_ZSHENV_SOURCED
+        . /etc/zshenv
+      fi
+
       [ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
     '';
 
