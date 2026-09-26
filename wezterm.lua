@@ -89,23 +89,34 @@ config.send_composed_key_when_right_alt_is_pressed = true
 --
 -- cmd-h and cmd-l are deliberately unused: macOS owns those for
 -- Space navigation and would intercept them first.
+-- For chords nvim uses that WezTerm also binds: hand the chord to nvim
+-- when nvim is the foreground program, otherwise run the WezTerm action.
+-- SendKey delivers it to the pane without re-running the binding. The
+-- shifted bracket is bound three ways ({ with and without SHIFT, and
+-- [ with SHIFT) because macOS can report the same press as any of them.
+local function nvim_or(key, mods, fallback)
+  return wezterm.action_callback(function(window, pane)
+    local proc = pane:get_foreground_process_name() or ''
+    if proc:match('n?vim$') then
+      window:perform_action(act.SendKey { key = key, mods = mods }, pane)
+    else
+      window:perform_action(fallback, pane)
+    end
+  end)
+end
+
 config.keys = {
   { key = 'd', mods = 'CMD', action = act.SplitHorizontal { domain = 'CurrentPaneDomain' } },
   { key = 'd', mods = 'CMD|SHIFT', action = act.SplitVertical { domain = 'CurrentPaneDomain' } },
-  -- Cmd-w closes an nvim tab when nvim is in front, and the pane otherwise.
-  -- SendKey hands the chord to nvim without re-running this binding.
-  {
-    key = 'w',
-    mods = 'CMD',
-    action = wezterm.action_callback(function(window, pane)
-      local proc = pane:get_foreground_process_name() or ''
-      if proc:match('n?vim$') then
-        window:perform_action(act.SendKey { key = 'w', mods = 'CMD' }, pane)
-      else
-        window:perform_action(act.CloseCurrentPane { confirm = false }, pane)
-      end
-    end),
-  },
+  -- Cmd-w closes the nvim tab, and Cmd-Shift-[ / ] step through nvim tabs,
+  -- when nvim is in front. Anywhere else they keep their WezTerm meaning.
+  { key = 'w', mods = 'CMD', action = nvim_or('w', 'CMD', act.CloseCurrentPane { confirm = false }) },
+  { key = '[', mods = 'CMD|SHIFT', action = nvim_or('[', 'CMD|SHIFT', act.ActivateTabRelative(-1)) },
+  { key = '{', mods = 'CMD', action = nvim_or('[', 'CMD|SHIFT', act.ActivateTabRelative(-1)) },
+  { key = '{', mods = 'CMD|SHIFT', action = nvim_or('[', 'CMD|SHIFT', act.ActivateTabRelative(-1)) },
+  { key = ']', mods = 'CMD|SHIFT', action = nvim_or(']', 'CMD|SHIFT', act.ActivateTabRelative(1)) },
+  { key = '}', mods = 'CMD', action = nvim_or(']', 'CMD|SHIFT', act.ActivateTabRelative(1)) },
+  { key = '}', mods = 'CMD|SHIFT', action = nvim_or(']', 'CMD|SHIFT', act.ActivateTabRelative(1)) },
 
   { key = '[', mods = 'CMD', action = act.ActivatePaneDirection 'Prev' },
   { key = ']', mods = 'CMD', action = act.ActivatePaneDirection 'Next' },
