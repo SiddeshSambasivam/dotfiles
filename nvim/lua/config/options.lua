@@ -12,6 +12,10 @@ vim.opt.signcolumn = 'yes' -- always reserved, so text does not jump
 vim.opt.cursorline = true
 vim.opt.scrolloff = 8 -- keep 8 lines visible above and below the cursor
 vim.opt.termguicolors = true
+-- Blinking block in every mode; the default is a bar in insert. A
+-- terminal takes only "blink or not" from this, so the numbers do not
+-- matter. WezTerm sets the real rate and fade (see wezterm.lua).
+vim.opt.guicursor = 'a:block-blinkon500-blinkoff500'
 vim.opt.wrap = false
 
 -- indent

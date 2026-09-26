@@ -1,11 +1,15 @@
 -- Keymaps that do not belong to a plugin. Plugin keymaps live in that
 -- plugin's own file under lua/plugins/.
+--
+-- No leader key. Editor commands sit on Cmd, the way VS Code has them.
+-- <D-...> is Cmd: WezTerm passes it through over the kitty keyboard
+-- protocol (enable_kitty_keyboard in wezterm.lua), but only for chords
+-- WezTerm does not bind itself. `wezterm show-keys` lists those.
 
 local map = vim.keymap.set
 
 map('n', '<Esc>', '<cmd>nohlsearch<CR>', { desc = 'Clear search highlight' })
-map('n', '<leader>w', '<cmd>write<CR>', { desc = 'Write' })
-map('n', '<leader>q', '<cmd>quit<CR>', { desc = 'Quit' })
+map({ 'n', 'i', 'v' }, '<D-s>', '<cmd>write<CR>', { desc = 'Save' })
 
 -- Window navigation without the <C-w> prefix.
 map('n', '<C-h>', '<C-w>h', { desc = 'Window left' })
@@ -20,3 +24,9 @@ map('n', 'N', 'Nzzzv')
 -- Move the selection and keep it selected.
 map('v', 'J', ":m '>+1<CR>gv=gv", { desc = 'Move selection down' })
 map('v', 'K', ":m '<-2<CR>gv=gv", { desc = 'Move selection up' })
+
+-- Terminal in a split along the bottom, on VS Code's Ctrl-`. Leave
+-- terminal mode with Esc twice: a single Esc still reaches programs
+-- running inside it, like fzf and lazygit, which use it to cancel.
+map('n', '<C-`>', '<cmd>botright split | resize 15 | terminal<CR>', { desc = 'Terminal' })
+map('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Leave terminal mode' })

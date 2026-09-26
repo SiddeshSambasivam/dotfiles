@@ -10,7 +10,7 @@ return {
     },
     lazy = false, -- neo-tree defers its own loading
     keys = {
-      { '<leader>e', '<cmd>Neotree toggle<CR>', desc = 'File explorer' },
+      { '<D-b>', '<cmd>Neotree toggle<CR>', desc = 'File explorer' }, -- VS Code's sidebar toggle
     },
   },
 }

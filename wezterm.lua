@@ -22,7 +22,19 @@ config.colors = {
   cursor_fg = '#101216',
 }
 
-config.default_cursor_style = 'SteadyBlock'
+-- Slow blink that fades in and out rather than switching hard.
+-- cursor_blink_rate is how long each phase lasts, in ms (default 800).
+-- The fade needs frames to draw, so animation_fps is raised from 10.
+config.default_cursor_style = 'BlinkingBlock'
+config.cursor_blink_rate = 1200
+config.cursor_blink_ease_in = 'EaseIn'
+config.cursor_blink_ease_out = 'EaseOut'
+config.animation_fps = 60
+
+-- Report keys with the kitty keyboard protocol to programs that ask
+-- for it. This is how nvim sees Cmd (<D-...>) and Ctrl-`; the shell
+-- does not ask, so it is unaffected.
+config.enable_kitty_keyboard = true
 
 -- Window. TITLE keeps the macOS title bar and traffic lights;
 -- RESIZE alone removes them.

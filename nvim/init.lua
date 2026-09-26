@@ -9,11 +9,6 @@
 --
 -- Test without switching:  nvim -u ./nvim/init.lua
 
--- Leader must be set before lazy.nvim loads, or plugin keymaps bind
--- against the wrong key.
-vim.g.mapleader = ' '
-vim.g.maplocalleader = ' '
-
 -- ---------------------------------------------------------------------
 -- Bootstrap lazy.nvim. It installs itself to ~/.local/share/nvim on
 -- first launch, which needs git and a network connection once.

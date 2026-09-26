@@ -177,6 +177,13 @@ in
       "com.apple.springing.delay" = 0.5;
       "com.apple.trackpad.forceClick" = true;
       "com.apple.sound.beep.volume" = 1.0;
+
+      # Key repeat, so a held h/j/k/l keeps moving. Units of 15 ms:
+      # repeat every 30 ms after a 225 ms hold. These are the fastest
+      # settings the System Settings sliders offer. Takes effect at the
+      # next login.
+      KeyRepeat = 2;
+      InitialKeyRepeat = 15;
     };
 
     dock = {
@@ -406,6 +413,10 @@ in
       #   shift 131072 | ctrl 262144 | alt 524288 | cmd 1048576
       # Key codes are the usual macOS virtual ones: 36 Return, 45 N,
       # 11 B.
+      # Holding a letter in WezTerm repeats it instead of opening the
+      # accent picker. Scoped to WezTerm, so other apps keep the picker.
+      "com.github.wez.wezterm".ApplePressAndHoldEnabled = false;
+
       "com.knollsoft.Rectangle" = {
         # Sparkle cannot update an app in the read-only nix store, so
         # leave its check off. Version bumps come from nixpkgs.

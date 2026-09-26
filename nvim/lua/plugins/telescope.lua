@@ -6,9 +6,10 @@ return {
     dependencies = { 'nvim-lua/plenary.nvim' },
     cmd = 'Telescope',
     keys = {
-      { '<leader>ff', '<cmd>Telescope find_files<CR>', desc = 'Find files' },
-      { '<leader>fg', '<cmd>Telescope live_grep<CR>', desc = 'Grep' },
-      { '<leader>fb', '<cmd>Telescope buffers<CR>', desc = 'Buffers' },
+      -- Cmd-p and Cmd-Shift-f are VS Code's quick open and search.
+      { '<D-p>', '<cmd>Telescope find_files<CR>', desc = 'Find files' },
+      { '<D-S-f>', '<cmd>Telescope live_grep<CR>', desc = 'Grep' },
+      { '<D-e>', '<cmd>Telescope buffers<CR>', desc = 'Open buffers' },
     },
   },
 }

@@ -65,6 +65,16 @@
     # nvim-treesitter compiles its parsers with this.
     tree-sitter
 
+    # Language servers, for nvim's completion and diagnostics.
+    # nvim/lua/plugins/lsp.lua enables each one only when its binary is
+    # here. rust-analyzer comes from rustup instead, with the toolchain.
+    bash-language-server
+    gopls
+    lua-language-server
+    nil
+    pyright
+    typescript-language-server
+
     # Window manager. Its shortcuts and gap size are declared in
     # darwin.nix. Carries the same store-path grant reset as Raycast
     # below, for Accessibility.
@@ -154,7 +164,12 @@
   ####################################################################
   programs.wezterm.enable = true;
 
-  xdg.configFile."wezterm/wezterm.lua".source = ./wezterm.lua;
+  # Out of the store, like nvim below, so an edit applies on save:
+  # WezTerm reloads its config when the file changes.
+  xdg.configFile."wezterm/wezterm.lua" = {
+    source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/wezterm.lua";
+    force = true;
+  };
 
   ####################################################################
   # Neovim
