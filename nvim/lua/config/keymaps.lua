@@ -15,8 +15,10 @@ map({ 'n', 'i', 'v' }, '<D-s>', '<cmd>write<CR>', { desc = 'Save' })
 -- indents: expandtab and softtabstop make it insert four spaces.
 map('i', '<S-Tab>', '<C-d>', { desc = 'Outdent line' })
 
--- Ctrl-Backspace deletes the word before the cursor.
-map('i', '<C-BS>', '<C-w>', { desc = 'Delete previous word' })
+-- Option-Backspace deletes the word before the cursor, as in other macOS
+-- editors. Only the left Option key: WezTerm sends it as Alt, while the
+-- right one still types special characters.
+map('i', '<M-BS>', '<C-w>', { desc = 'Delete previous word' })
 
 -- Cmd-/ toggles a line comment in the file's language (# in Python), as in
 -- VS Code. It runs Neovim's built-in gcc, which reads 'commentstring', and
