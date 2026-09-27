@@ -18,6 +18,11 @@ vim.opt.termguicolors = true
 vim.opt.guicursor = 'a:block-blinkon500-blinkoff500'
 vim.opt.wrap = false
 
+-- Show indentation and trailing spaces as faint dots, the way VS Code renders
+-- whitespace. A tab shows as an arrow. Spaces between words stay blank.
+vim.opt.list = true
+vim.opt.listchars = { lead = '·', trail = '·', tab = '→ ', nbsp = '␣' }
+
 -- indent
 vim.opt.expandtab = true -- spaces, not tabs
 vim.opt.shiftwidth = 4
