@@ -31,6 +31,15 @@ return {
         end)
       end
       require('minuet').setup(opts)
+
+      -- Load the model now, in the background, and keep it loaded for 30
+      -- minutes after the last suggestion. Loading takes 8 to 14 s, longer
+      -- than minuet waits for a suggestion, so a cold first keystroke cancelled
+      -- the load and suggestions never started.
+      if opts.virtualtext.auto_trigger_ft[1] then
+        vim.system({ 'curl', '-s', '--max-time', '60', 'http://localhost:11434/api/generate',
+          '-d', vim.json.encode({ model = model, keep_alive = '30m' }) })
+      end
     end,
     opts = {
       provider = 'openai_fim_compatible',
