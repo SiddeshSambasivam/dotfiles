@@ -44,7 +44,13 @@ return {
           name = 'Ollama',
           end_point = 'http://localhost:11434/v1/completions',
           model = model,
-          optional = { max_tokens = 56, top_p = 0.9 },
+          -- Measured on an M2 Pro with the 14B model: it writes about 18
+          -- tokens a second, so length is what costs time. A suggestion
+          -- stops at the first blank line, which is where a block ends, and
+          -- is capped at 32 tokens. That puts most suggestions at 0.35 to
+          -- 1.3 s, median 0.65 s. Without the stop, it ran on into the next
+          -- function and took over 3 s, past minuet's 3 s timeout.
+          optional = { max_tokens = 32, top_p = 0.9, stop = { '\n\n' } },
         },
       },
       virtualtext = {
