@@ -155,4 +155,17 @@ config.keys = {
   { key = 'Enter', mods = 'ALT', action = act.DisableDefaultAssignment },
 }
 
+-- Cmd-Shift-letter chords nvim uses: Cmd-Shift-f grep, Cmd-Shift-r search
+-- and replace, Cmd-Shift-m problems, Cmd-Shift-w reopen tab. WezTerm binds
+-- the plain Cmd-letter for each (search, reload, hide, close), so these are
+-- bound explicitly and handed to nvim as kitty sequences. Both spellings of
+-- the letter are bound, since macOS may report the shifted key either way.
+-- Outside nvim they do nothing.
+for _, chord in ipairs({ { 'f', 102 }, { 'r', 114 }, { 'm', 109 }, { 'w', 119 } }) do
+  local letter, code = chord[1], chord[2]
+  local action = nvim_or(string.format('\x1b[%d;10u', code), act.Nop)
+  table.insert(config.keys, { key = letter, mods = 'CMD|SHIFT', action = action })
+  table.insert(config.keys, { key = letter:upper(), mods = 'CMD', action = action })
+end
+
 return config
