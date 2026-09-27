@@ -34,7 +34,17 @@ map('i', '<M-BS>', '<C-w>', { desc = 'Delete previous word' })
 -- Cmd-/ toggles a line comment in the file's language (# in Python), as in
 -- VS Code. It runs Neovim's built-in gcc, which reads 'commentstring', and
 -- keeps the cursor on the same character.
+--
+-- Plain text, JSON and files with no known type have no comment syntax, so
+-- gcc would refuse. Fall back the way VS Code does: // for JSON, # otherwise.
+local function ensure_commentstring()
+  if vim.bo.commentstring == '' then
+    vim.bo.commentstring = vim.bo.filetype == 'json' and '// %s' or '# %s'
+  end
+end
+
 local function toggle_comment()
+  ensure_commentstring()
   local row, col = unpack(vim.api.nvim_win_get_cursor(0))
   local before = #vim.api.nvim_get_current_line()
   vim.cmd.normal('gcc')
@@ -42,7 +52,10 @@ local function toggle_comment()
   vim.api.nvim_win_set_cursor(0, { row, math.max(0, col + shift) })
 end
 map({ 'n', 'i' }, '<D-/>', toggle_comment, { desc = 'Toggle comment' })
-map('x', '<D-/>', 'gc', { remap = true, desc = 'Toggle comment' })
+map('x', '<D-/>', function()
+  ensure_commentstring()
+  return 'gc'
+end, { expr = true, remap = true, desc = 'Toggle comment' })
 
 -- Cmd-w reaches nvim only because wezterm.lua passes it through when nvim
 -- is in front; anywhere else it still closes the WezTerm pane.
