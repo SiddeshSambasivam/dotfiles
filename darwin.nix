@@ -221,6 +221,7 @@ in
         "/Users/${username}/Applications/calibre.app"
         "/Applications/Comet.app"
         "/Applications/Wispr Flow.app"
+        "/Applications/Ollama.app"
       ];
     };
 
