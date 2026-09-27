@@ -10,6 +10,8 @@ return {
       { '<D-p>', '<cmd>Telescope find_files<CR>', desc = 'Find files' },
       { '<D-S-f>', '<cmd>Telescope live_grep<CR>', desc = 'Grep' },
       { '<D-e>', '<cmd>Telescope buffers<CR>', desc = 'Open buffers' },
+      -- VS Code's Problems panel: every diagnostic in the open files.
+      { '<D-S-m>', '<cmd>Telescope diagnostics<CR>', desc = 'Problems' },
     },
   },
 }
