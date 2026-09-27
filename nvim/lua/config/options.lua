@@ -16,7 +16,11 @@ vim.opt.termguicolors = true
 -- terminal takes only "blink or not" from this, so the numbers do not
 -- matter. WezTerm sets the real rate and fade (see wezterm.lua).
 vim.opt.guicursor = 'a:block-blinkon500-blinkoff500'
-vim.opt.wrap = false
+-- Long lines wrap on screen at the window edge instead of scrolling
+-- sideways. Only the display wraps, and the file keeps its long lines.
+vim.opt.wrap = true
+vim.opt.linebreak = true -- break between words, not mid-word
+vim.opt.breakindent = true -- a wrapped line continues at its own indent
 
 -- Show indentation and trailing spaces as faint dots, the way VS Code renders
 -- whitespace. A tab shows as an arrow. Spaces between words stay blank.
