@@ -11,6 +11,17 @@ local map = vim.keymap.set
 map('n', '<Esc>', '<cmd>nohlsearch<CR>', { desc = 'Clear search highlight' })
 map({ 'n', 'i', 'v' }, '<D-s>', '<cmd>write<CR>', { desc = 'Save' })
 
+-- Tab accepts a ghost-text suggestion when one is showing, and otherwise
+-- indents as usual.
+map('i', '<Tab>', function()
+  local ok, ghost = pcall(require, 'minuet.virtualtext')
+  if ok and ghost.action.is_visible() then
+    ghost.action.accept()
+  else
+    vim.api.nvim_feedkeys(vim.keycode('<Tab>'), 'n', false)
+  end
+end, { desc = 'Accept suggestion or indent' })
+
 -- Shift-Tab takes the line back one indent level, as in VS Code. Tab already
 -- indents: expandtab and softtabstop make it insert four spaces.
 map('i', '<S-Tab>', '<C-d>', { desc = 'Outdent line' })
