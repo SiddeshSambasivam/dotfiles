@@ -36,6 +36,15 @@ return {
         settings = { basedpyright = { analysis = { typeCheckingMode = 'standard' } } },
       })
 
+      -- gd goes to the real definition through the language server, following
+      -- imports into the module that defines the name. Neovim's own gd only
+      -- searches the current file for the first matching word.
+      vim.api.nvim_create_autocmd('LspAttach', {
+        callback = function(args)
+          vim.keymap.set('n', 'gd', vim.lsp.buf.definition, { buffer = args.buf, desc = 'Go to definition' })
+        end,
+      })
+
       for name, bin in pairs(servers) do
         if vim.fn.executable(bin) == 1 then
           vim.lsp.enable(name)

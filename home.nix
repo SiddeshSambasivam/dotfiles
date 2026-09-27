@@ -228,10 +228,23 @@
   home.file.".claude/CLAUDE.md".source =
     config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/claude/CLAUDE.md";
 
+  # A project opts in with an .envrc, then `direnv allow` once. For a uv
+  # project the .envrc is one line, `layout uv`: entering the directory puts
+  # its .venv on PATH and sets VIRTUAL_ENV, and leaving undoes it.
   programs.direnv = {
     enable = true;
     nix-direnv.enable = true;
     enableZshIntegration = true;
+    stdlib = ''
+      layout_uv() {
+        if [[ ! -d .venv ]]; then
+          log_status "no .venv here yet, run: uv sync"
+          return
+        fi
+        export VIRTUAL_ENV="$PWD/.venv"
+        PATH_add "$VIRTUAL_ENV/bin"
+      }
+    '';
   };
 
   programs.fzf = {

@@ -73,9 +73,12 @@ map('n', '<C-l>', '<C-w>l', { desc = 'Window right' })
 map('n', 'n', 'nzzzv')
 map('n', 'N', 'Nzzzv')
 
--- Move the selection and keep it selected.
-map('v', 'J', ":m '>+1<CR>gv=gv", { desc = 'Move selection down' })
-map('v', 'K', ":m '<-2<CR>gv=gv", { desc = 'Move selection up' })
+-- Select lines, then Ctrl-j / Ctrl-k moves them down / up and keeps them
+-- selected. Indentation is left as it is, as in VS Code: reindenting would
+-- change the meaning of Python code moved between blocks.
+-- silent! makes it a no-op at the top or bottom of the file, as in VS Code.
+map('x', '<C-j>', ":<C-u>silent! '<,'>move '>+1<CR>gv", { silent = true, desc = 'Move lines down' })
+map('x', '<C-k>', ":<C-u>silent! '<,'>move '<-2<CR>gv", { silent = true, desc = 'Move lines up' })
 
 -- Terminal in a split along the bottom, on VS Code's Ctrl-`. Leave
 -- terminal mode with Esc twice: a single Esc still reaches programs
