@@ -146,6 +146,10 @@ in
       # Utilities
       { name = "calibre"; args = { appdir = "~/Applications"; }; }  # ebook library
       "keyboardcleantool"
+
+      # Runs models locally. nvim's ghost text talks to it
+      # (nvim/lua/plugins/ghost-text.lua).
+      "ollama-app"
       "microsoft-excel"
       "medis"          # redis GUI
       "localsend"
