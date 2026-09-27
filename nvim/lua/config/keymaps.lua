@@ -15,8 +15,8 @@ map({ 'n', 'i', 'v' }, '<D-s>', '<cmd>write<CR>', { desc = 'Save' })
 -- indents: expandtab and softtabstop make it insert four spaces.
 map('i', '<S-Tab>', '<C-d>', { desc = 'Outdent line' })
 
--- Cmd-Backspace deletes the word before the cursor.
-map('i', '<D-BS>', '<C-w>', { desc = 'Delete previous word' })
+-- Ctrl-Backspace deletes the word before the cursor.
+map('i', '<C-BS>', '<C-w>', { desc = 'Delete previous word' })
 
 -- Cmd-/ toggles a line comment in the file's language (# in Python), as in
 -- VS Code. It runs Neovim's built-in gcc, which reads 'commentstring', and
