@@ -11,6 +11,13 @@ local map = vim.keymap.set
 map('n', '<Esc>', '<cmd>nohlsearch<CR>', { desc = 'Clear search highlight' })
 map({ 'n', 'i', 'v' }, '<D-s>', '<cmd>write<CR>', { desc = 'Save' })
 
+-- Shift-Tab takes the line back one indent level, as in VS Code. Tab already
+-- indents: expandtab and softtabstop make it insert four spaces.
+map('i', '<S-Tab>', '<C-d>', { desc = 'Outdent line' })
+
+-- Cmd-Backspace deletes the word before the cursor.
+map('i', '<D-BS>', '<C-w>', { desc = 'Delete previous word' })
+
 -- Cmd-/ toggles a line comment in the file's language (# in Python), as in
 -- VS Code. It runs Neovim's built-in gcc, which reads 'commentstring', and
 -- keeps the cursor on the same character.

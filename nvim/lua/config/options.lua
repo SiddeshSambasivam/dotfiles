@@ -20,8 +20,9 @@ vim.opt.wrap = false
 
 -- indent
 vim.opt.expandtab = true -- spaces, not tabs
-vim.opt.shiftwidth = 2
-vim.opt.tabstop = 2
+vim.opt.shiftwidth = 4
+vim.opt.tabstop = 4
+vim.opt.softtabstop = 4 -- Tab inserts 4 spaces, Backspace removes them as one
 vim.opt.smartindent = true
 
 -- search
