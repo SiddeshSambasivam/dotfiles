@@ -5,8 +5,11 @@ My Mac as a config file. nix-darwin does the work.
 ```
 flake.nix     inputs and the darwinConfiguration
 darwin.nix    system prefs, keyboard shortcuts, Homebrew casks
-zshrc         shell config, symlinked to ~/.zshrc
-nsync.sh      rebuild and activate
+home.nix      shell, CLI tools and apps, through home-manager
+zsh/          shell config, read into ~/.zshrc by home.nix
+nvim/         Neovim config, linked to ~/.config/nvim
+wezterm.lua   WezTerm config, linked to ~/.config/wezterm
+nsync.sh      rebuild and activate, then app icons and the ghost-text model
 claude/       Claude Code global instructions, linked to ~/.claude/CLAUDE.md
 ```
 
@@ -57,8 +60,10 @@ cat /run/current-system/darwin-version.json
    until something has been activated once, and a fresh Mac has a different
    `LocalHostName`, so you have to name the config explicitly.
 
-5. `ln -s ~/dotfiles/zshrc ~/.zshrc`
-6. From then on it's just `./nsync.sh`.
+5. Run `./nsync.sh` once. It sets the app icons and pulls the Ollama model
+   that nvim's ghost text runs on, about 9 GB, so give it a while. From then
+   on it's just `./nsync.sh`, and the model check takes a fraction of a
+   second once the model is there.
 
 Then go do the manual bits below, because the machine isn't really set up
 without them.
