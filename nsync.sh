@@ -23,3 +23,7 @@ model=$(sed -n "s/^local model = '\(.*\)'$/\1/p" nvim/lua/plugins/ghost-text.lua
 open -g -a Ollama
 for _ in $(seq 30); do curl -sf http://localhost:11434/api/version >/dev/null && break; sleep 1; done
 ollama show "$model" >/dev/null 2>&1 || ollama pull "$model"
+
+# nvim's Rust language server. rustup owns the toolchain (see README), and
+# its rust-analyzer proxy on PATH fails until the component is added.
+if command -v rustup >/dev/null; then rustup component add rust-analyzer; fi
