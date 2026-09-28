@@ -11,12 +11,16 @@ local config = wezterm.config_builder()
 -- MesloLGS NF (a Nerd Font) comes next and supplies the icons nvim and
 -- powerlevel10k draw.
 config.font = wezterm.font_with_fallback { 'Menlo', 'MesloLGS NF', 'JetBrains Mono' }
-config.font_size = 14.0
+-- 15 because it lands on whole pixels on a 1x monitor: Menlo is 9.03 px
+-- per character there, and WezTerm's grid cells are whole pixels. At 14 it
+-- was 8.42 px in an 8 px cell, so each letter sat at a different fraction
+-- of a pixel and came out unevenly sharp.
+config.font_size = 15.0
 config.line_height = 1.05
--- WezTerm draws text with FreeType, which comes out thinner than macOS's
--- own text engine. Light hinting keeps letter shapes closer to their design,
--- the way macOS draws them.
-config.freetype_load_target = 'Light'
+-- Full hinting snaps strokes to whole pixels: crisp, even strokes on the
+-- 1x external monitors. WezTerm draws text with FreeType, which otherwise
+-- comes out thinner and softer than macOS's own text engine.
+config.freetype_load_target = 'Normal'
 -- Subpixel smoothing: edges use the red, green and blue parts of each pixel
 -- separately, which draws thicker, sharper strokes than grayscale smoothing.
 config.freetype_render_target = 'HorizontalLcd'
