@@ -9,7 +9,7 @@
 
 My Mac, declared with nix-darwin, home-manager and Homebrew casks. A work in progress that changes as my preferences do.
 
-I use frontier models for day-to-day development. On personal projects I'd rather write the code myself, since fully agentic development doesn't feel as fulfilling. There, Neovim's inline autocomplete comes from qwen2.5-coder:14b, running locally in Ollama.
+I use frontier models for day-to-day development at work. On personal projects I'd rather write the code myself, since fully agentic development doesn't feel as fulfilling. There, Neovim's inline autocomplete comes from qwen2.5-coder:14b, running locally in Ollama.
 
 ```
 flake.nix     inputs and the darwinConfiguration
