@@ -7,7 +7,7 @@
 ![Neovim](https://img.shields.io/badge/Neovim-0.12-57A143?logo=neovim&logoColor=white)
 ![WezTerm](https://img.shields.io/badge/WezTerm-4E49EE?logo=wezterm&logoColor=white)
 
-My Mac, declared with nix-darwin, home-manager and Homebrew casks.
+My Mac, declared with nix-darwin, home-manager and Homebrew casks. A work in progress that changes as my preferences do.
 
 Neovim's inline autocomplete comes from qwen2.5-coder:14b, running locally in Ollama.
 
