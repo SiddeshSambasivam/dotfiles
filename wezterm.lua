@@ -7,9 +7,10 @@ local wezterm = require 'wezterm'
 local act = wezterm.action
 local config = wezterm.config_builder()
 
--- Font. MesloLGS NF is a Nerd Font, which powerlevel10k needs
--- for its glyphs. The fallbacks cover anything it lacks.
-config.font = wezterm.font_with_fallback { 'MesloLGS NF', 'JetBrains Mono', 'Menlo' }
+-- Font. Menlo, the same as the Cursor editor. It has no icon glyphs, so
+-- MesloLGS NF (a Nerd Font) comes next and supplies the icons nvim and
+-- powerlevel10k draw.
+config.font = wezterm.font_with_fallback { 'Menlo', 'MesloLGS NF', 'JetBrains Mono' }
 config.font_size = 14.0
 config.line_height = 1.05
 -- WezTerm draws text with FreeType, which comes out thinner than macOS's
