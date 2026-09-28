@@ -56,3 +56,29 @@ vim.opt.splitbelow = true
 vim.opt.clipboard = 'unnamedplus' -- y and p use the macOS clipboard
 vim.opt.mouse = 'a'
 vim.opt.updatetime = 250
+
+-- Show a problem's full message on lines under the code, for the line the
+-- cursor is on, so other lines stay clean. Neovim does not wrap text drawn
+-- under a line, so a long message would run off the window edge. It is
+-- split into window-width lines first.
+local function wrap_to_window(message, diagnostic)
+  local width = math.max(40, vim.api.nvim_win_get_width(0) - diagnostic.col - 16)
+  local lines, line = {}, ''
+  for word in message:gmatch('%S+') do
+    if line ~= '' and #line + 1 + #word > width then
+      table.insert(lines, line)
+      line = word
+    else
+      line = line == '' and word or line .. ' ' .. word
+    end
+  end
+  table.insert(lines, line)
+  return table.concat(lines, '\n')
+end
+
+vim.diagnostic.config({
+  virtual_lines = {
+    current_line = true,
+    format = function(diagnostic) return wrap_to_window(diagnostic.message, diagnostic) end,
+  },
+})
