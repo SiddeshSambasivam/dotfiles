@@ -9,9 +9,16 @@
 --
 -- Test without switching:  nvim -u ./nvim/init.lua
 
+-- lazy-lock.json lives next to this file in the repo, so the plugin
+-- commits are versioned and every machine gets the same ones.
+-- resolve() follows the home-manager symlinks back to the repo.
+local lockfile = vim.fn.fnamemodify(vim.fn.resolve(vim.fn.stdpath('config') .. '/init.lua'), ':h') .. '/lazy-lock.json'
+
 -- ---------------------------------------------------------------------
 -- Bootstrap lazy.nvim. It installs itself to ~/.local/share/nvim on
--- first launch, which needs git and a network connection once.
+-- first launch, which needs git and a network connection once. It then
+-- checks out the commit in lazy-lock.json, since `Lazy restore` pins
+-- every plugin except lazy.nvim itself.
 -- ---------------------------------------------------------------------
 local lazypath = vim.fn.stdpath('data') .. '/lazy/lazy.nvim'
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
@@ -31,6 +38,8 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
     vim.fn.getchar()
     os.exit(1)
   end
+  local locked = vim.json.decode(table.concat(vim.fn.readfile(lockfile), '\n'))['lazy.nvim']
+  if locked then vim.fn.system({ 'git', '-C', lazypath, 'checkout', '--quiet', locked.commit }) end
 end
 vim.opt.rtp:prepend(lazypath)
 
@@ -40,10 +49,7 @@ require('config.autocmds')
 
 require('lazy').setup({
   spec = { { import = 'plugins' } },
-  -- Keep lazy-lock.json next to this file in the repo, so the plugin
-  -- commits are versioned and every machine gets the same ones.
-  -- resolve() follows the home-manager symlinks back to the repo.
-  lockfile = vim.fn.fnamemodify(vim.fn.resolve(vim.fn.stdpath('config') .. '/init.lua'), ':h') .. '/lazy-lock.json',
+  lockfile = lockfile,
   change_detection = { notify = false },
   ui = { border = 'rounded' },
 })
