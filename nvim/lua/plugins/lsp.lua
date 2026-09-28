@@ -21,6 +21,7 @@ local servers = {
   lua_ls = 'lua-language-server',
   nil_ls = 'nil',
   basedpyright = 'basedpyright-langserver',
+  ruff = 'ruff', -- Python lint: unused imports, undefined names
   rust_analyzer = 'rust-analyzer',
   ts_ls = 'typescript-language-server',
 }

@@ -68,6 +68,10 @@
     # Sorts Python imports when nvim saves a file (nvim/lua/plugins/format.lua).
     isort
 
+    # Python linter, run by nvim as a language server. Flags unused
+    # imports, undefined names and the like (nvim/lua/plugins/lsp.lua).
+    ruff
+
     # Language servers, for nvim's completion and diagnostics.
     # nvim/lua/plugins/lsp.lua enables each one only when its binary is
     # here. rust-analyzer comes from rustup instead, with the toolchain.
