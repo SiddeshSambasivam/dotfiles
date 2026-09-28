@@ -9,6 +9,8 @@
 
 My Mac, declared with nix-darwin, home-manager and Homebrew casks.
 
+Neovim is set up like VS Code. Its inline autocomplete comes from qwen2.5-coder:14b, running locally in Ollama.
+
 ```
 flake.nix     inputs and the darwinConfiguration
 darwin.nix    system prefs, keyboard shortcuts, Homebrew casks, dock
