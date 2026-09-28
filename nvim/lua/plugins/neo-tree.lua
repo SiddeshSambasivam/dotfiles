@@ -26,6 +26,15 @@ local FOLDER_ICONS = {
     '.mypy_cache', '.pytest_cache', '.ruff_cache', '.cache', '.next', 'coverage', '.direnv' } },
 }
 
+-- neo-tree's italic groups, with the same colours minus the italics.
+local UPRIGHT_HIGHLIGHTS = {
+  NeoTreeRootName = { bold = true },
+  NeoTreeFileStatsHeader = { bold = true },
+  NeoTreeMessage = { fg = '#6e6e6e' },
+  NeoTreeGitConflict = { fg = '#ff8700', bold = true },
+  NeoTreeGitUntracked = { fg = '#ff8700' },
+}
+
 -- Plain folders use Material's own folder glyphs in its grey, so they
 -- match the named ones instead of mixing two icon sets.
 local PLAIN_FOLDER = { closed = 0xF024B, open = 0xF0770, empty = 0xF0256, color = '#90A4AE' }
@@ -75,6 +84,11 @@ return {
       { '<D-b>', '<cmd>Neotree toggle<CR>', desc = 'File explorer' }, -- VS Code's sidebar toggle
     },
     config = function()
+      -- neo-tree draws these in italics. It only fills in groups that are not
+      -- already defined, so defining them upright first keeps them that way.
+      for name, hl in pairs(UPRIGHT_HIGHLIGHTS) do
+        vim.api.nvim_set_hl(0, name, hl)
+      end
       local lookup = build_folder_lookup()
       require('neo-tree').setup({
         default_component_configs = {

@@ -65,7 +65,15 @@ config.show_new_tab_button_in_tab_bar = true
 -- in terminal cells, which looks out of place under a real
 -- macOS title bar.
 config.use_fancy_tab_bar = true
-config.tab_max_width = 32
+config.tab_max_width = 40
+
+-- Pad each tab title with three spaces on either side, keeping WezTerm's
+-- default "1: title" text. A title set with Cmd-Shift-e wins over the name
+-- of the running program.
+wezterm.on('format-tab-title', function(tab)
+  local title = tab.tab_title ~= '' and tab.tab_title or tab.active_pane.title
+  return '   ' .. (tab.tab_index + 1) .. ': ' .. title .. '   '
+end)
 config.window_frame = {
   font = wezterm.font { family = 'MesloLGS NF', weight = 'Regular' },
   font_size = 12.0,

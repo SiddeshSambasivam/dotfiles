@@ -1,5 +1,13 @@
 -- Editor settings. No plugins referenced here.
 
+-- No remote plugins are used, so skip nvim's language-provider checks. The
+-- Python one probes every python3 on PATH, pyenv shims included, the first
+-- time a Python file opens, and blocked that open for about 3 s.
+vim.g.loaded_python3_provider = 0
+vim.g.loaded_ruby_provider = 0
+vim.g.loaded_perl_provider = 0
+vim.g.loaded_node_provider = 0
+
 -- files
 vim.opt.undofile = true -- undo history survives closing the file
 vim.opt.swapfile = false
