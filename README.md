@@ -1,5 +1,12 @@
 # dotfiles
 
+![macOS](https://img.shields.io/badge/macOS-000000?logo=apple&logoColor=white)
+![nix-darwin](https://img.shields.io/badge/nix--darwin-26.05-5277C3?logo=nixos&logoColor=white)
+![home-manager](https://img.shields.io/badge/home--manager-26.05-5277C3?logo=nixos&logoColor=white)
+![Homebrew](https://img.shields.io/badge/Homebrew-casks-FBB040?logo=homebrew&logoColor=white)
+![Neovim](https://img.shields.io/badge/Neovim-0.12-57A143?logo=neovim&logoColor=white)
+![WezTerm](https://img.shields.io/badge/WezTerm-4E49EE?logo=wezterm&logoColor=white)
+
 My Mac, declared with nix-darwin, home-manager and Homebrew casks.
 
 ```
