@@ -70,6 +70,24 @@ local function pick_icon(icon, node, lookup)
   end
 end
 
+-- A file on disk, not a panel, a terminal or a git message.
+local function is_plain_file(buf)
+  return vim.bo[buf].buftype == ''
+    and vim.api.nvim_buf_get_name(buf) ~= ''
+    and not vim.tbl_contains({ 'gitcommit', 'gitrebase' }, vim.bo[buf].filetype)
+end
+
+-- Set when the tree is closed (Cmd-b, Cmd-w, q), so opening a file does
+-- not bring it back. Opening the tree again clears it.
+local closed_by_user = false
+
+local function tree_is_open()
+  for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+    if vim.bo[vim.api.nvim_win_get_buf(win)].filetype == 'neo-tree' then return true end
+  end
+  return false
+end
+
 return {
   {
     'nvim-neo-tree/neo-tree.nvim',
@@ -105,6 +123,24 @@ return {
           -- the coloured marker at the right edge (? untracked, and so on).
           name = { use_git_status_colors = false },
         },
+        -- Keep the open file expanded and highlighted in the tree.
+        filesystem = { follow_current_file = { enabled = true } },
+        event_handlers = {
+          { event = 'neo_tree_window_after_close', handler = function() closed_by_user = true end },
+          { event = 'neo_tree_window_after_open', handler = function() closed_by_user = false end },
+        },
+      })
+
+      -- Opening a file also opens the tree beside it and reveals the file,
+      -- without moving the cursor into the tree, unless the tree was closed
+      -- on purpose. Commit and rebase messages are skipped, since nvim is
+      -- also git's editor.
+      vim.api.nvim_create_autocmd('BufWinEnter', {
+        callback = function(args)
+          if is_plain_file(args.buf) and not closed_by_user and not tree_is_open() then
+            vim.schedule(function() vim.cmd('Neotree show reveal') end)
+          end
+        end,
       })
     end,
   },
