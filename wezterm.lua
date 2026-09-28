@@ -17,6 +17,9 @@ config.line_height = 1.05
 -- own text engine. Light hinting keeps letter shapes closer to their design,
 -- the way macOS draws them.
 config.freetype_load_target = 'Light'
+-- Subpixel smoothing: edges use the red, green and blue parts of each pixel
+-- separately, which draws thicker, sharper strokes than grayscale smoothing.
+config.freetype_render_target = 'HorizontalLcd'
 
 -- Colours, carried over from the iTerm profile.
 config.colors = {
