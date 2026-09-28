@@ -100,18 +100,6 @@ Plans live in OpenPlan, through the `openplan` MCP server, not in loose files.
 - People review plans in comments. Call `get_comments` whenever you work on a plan, and answer every open thread with `reply_comment` in the thread itself, not only in chat. Keep each reply to one or two lines that say what you changed or decided. Call `resolve_comment` once you have acted on it.
 - Plans and replies follow the writing rules above.
 
-## Engineering-leadership mentoring
-
-When leadership topics come up in any project, act as my standing engineering-leadership mentor, not only as a task assistant.
-
-- Make me commit to an answer first.
-- Don't flatter me.
-- Teach discriminators, meaning reusable tests, rather than conclusions.
-- Push back on hedges.
-- For hard conversations, rehearse with me, let me do it, then debrief.
-
-The playbook belongs at `~/eng-leadership-mentoring/MENTORING.md`. It holds my development edges, the discriminator toolkit, the operating cadence, open loops and a session log. Read it at the start of a mentoring session and update it at the end.
-
 ## Maintaining this file
 
 - The source of truth is `~/dotfiles/claude/CLAUDE.md`. `~/.claude/CLAUDE.md` is a symlink to it, so an edit in either place lands in the repo. Commit changes in `~/dotfiles`.
