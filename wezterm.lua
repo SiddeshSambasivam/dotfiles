@@ -10,9 +10,8 @@ local config = wezterm.config_builder()
 -- Font. MesloLGS NF is a Nerd Font, which powerlevel10k needs
 -- for its glyphs. The fallbacks cover anything it lacks.
 config.font = wezterm.font_with_fallback { 'MesloLGS NF', 'JetBrains Mono', 'Menlo' }
--- Size and line spacing match the Cursor editor (15, and about 1.5x).
-config.font_size = 15.0
-config.line_height = 1.5
+config.font_size = 14.0
+config.line_height = 1.05
 -- WezTerm draws text with FreeType, which comes out thinner than macOS's
 -- own text engine. Light hinting keeps letter shapes closer to their design,
 -- the way macOS draws them.
