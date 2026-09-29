@@ -124,7 +124,15 @@ return {
           name = { use_git_status_colors = false },
         },
         -- Keep the open file expanded and highlighted in the tree.
-        filesystem = { follow_current_file = { enabled = true } },
+        filesystem = {
+          follow_current_file = { enabled = true },
+          -- Show dotfiles such as .gitignore. .git and .DS_Store stay
+          -- hidden, as in VS Code. Gitignored files stay hidden too.
+          filtered_items = {
+            hide_dotfiles = false,
+            never_show = { '.git', '.DS_Store' },
+          },
+        },
         event_handlers = {
           { event = 'neo_tree_window_after_close', handler = function() closed_by_user = true end },
           { event = 'neo_tree_window_after_open', handler = function() closed_by_user = false end },
