@@ -8,6 +8,11 @@
 -- Tab accepts a suggestion when one is showing (see keymaps.lua).
 local model = 'qwen2.5-coder:14b'
 
+local function load_model()
+  vim.system({ 'curl', '-s', '--max-time', '60', 'http://localhost:11434/api/generate',
+    '-d', vim.json.encode({ model = model, keep_alive = '30m' }) })
+end
+
 return {
   {
     'milanglacier/minuet-ai.nvim',
@@ -32,13 +37,15 @@ return {
       end
       require('minuet').setup(opts)
 
-      -- Load the model now, in the background, and keep it loaded for 30
-      -- minutes after the last suggestion. Loading takes 8 to 14 s, longer
-      -- than minuet waits for a suggestion, so a cold first keystroke cancelled
-      -- the load and suggestions never started.
+      -- Load the model in the background, now and on every InsertEnter, and
+      -- keep it loaded for 30 minutes. Loading takes 8 to 14 s, longer than
+      -- minuet waits for a suggestion, so minuet cancels every load it starts
+      -- itself and suggestions never resume once the model unloads. This load
+      -- is not cancelled, and when the model is already loaded it only
+      -- resets the 30 minutes.
       if opts.virtualtext.auto_trigger_ft[1] then
-        vim.system({ 'curl', '-s', '--max-time', '60', 'http://localhost:11434/api/generate',
-          '-d', vim.json.encode({ model = model, keep_alive = '30m' }) })
+        load_model()
+        vim.api.nvim_create_autocmd('InsertEnter', { callback = load_model })
       end
     end,
     opts = {
